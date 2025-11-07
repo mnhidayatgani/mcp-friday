@@ -1,9 +1,10 @@
 /**
  * FRIDAY Search Tool
- * Hybrid search across all memory sources
+ * Hybrid search across Git + Redis with intelligent ranking
  */
 
-import { GitMemoryManager } from "../memory/git-manager.js";
+import { HybridMemoryManager } from "../memory/hybrid-manager.js";
+import { ConfigLoader } from "../utils/config-loader.js";
 
 export interface SearchArgs {
   query: string;
@@ -14,41 +15,46 @@ export interface SearchArgs {
 export async function searchTool(args: any) {
   const {
     query,
-    sources = ["git", "redis", "context7"],
+    sources = ["git", "redis"],
     maxResults = 10,
   } = args as SearchArgs;
 
   try {
+    const config = ConfigLoader.load();
+    const hybridMemory = new HybridMemoryManager(config);
+
+    const results = await hybridMemory.search(query, maxResults);
+
     const output: string[] = [];
-    const results: any[] = [];
-
-    // Search Git memory
-    if (sources.includes("git")) {
-      const gitMemory = new GitMemoryManager();
-      const gitResults = await gitMemory.searchMemory(query);
-
-      for (const result of gitResults.slice(0, maxResults)) {
-        results.push({
-          source: "git",
-          type: result.type,
-          path: result.path,
-          snippet: result.content.substring(0, 200) + "...",
-          modified: result.modified,
-        });
-      }
-    }
-
     output.push(`🔍 Search Results for: "${query}"`);
     output.push("");
     output.push(`Found ${results.length} result(s)`);
+    output.push(`Mode: ${hybridMemory.isRedisEnabled() ? "Hybrid (Git + Redis)" : "Git-only"}`);
     output.push("");
 
-    for (const result of results) {
-      output.push(`📄 [${result.source}] ${result.type}`);
-      output.push(`   Path: ${result.path}`);
-      output.push(`   Modified: ${result.modified.toISOString()}`);
-      output.push(`   ${result.snippet}`);
+    if (results.length === 0) {
+      output.push("No matches found.");
       output.push("");
+      output.push("Suggestions:");
+      output.push("- Try different keywords");
+      output.push("- Check spelling");
+      output.push("- Use broader search terms");
+    } else {
+      for (let i = 0; i < results.length; i++) {
+        const result = results[i];
+        const relevance = Math.round(result.relevance * 100);
+
+        output.push(`${i + 1}. [${result.source.toUpperCase()}] ${relevance}% match`);
+        if (result.type) {
+          output.push(`   Type: ${result.type}`);
+        }
+        if (result.path) {
+          output.push(`   Path: ${result.path}`);
+        }
+        const snippet = result.content.substring(0, 150).replace(/\n/g, " ");
+        output.push(`   ${snippet}...`);
+        output.push("");
+      }
     }
 
     return {

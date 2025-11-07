@@ -1,9 +1,10 @@
 /**
  * FRIDAY Context Tool
- * Load project context from all sources
+ * Load complete project context from hybrid memory
  */
 
-import { GitMemoryManager } from "../memory/git-manager.js";
+import { HybridMemoryManager } from "../memory/hybrid-manager.js";
+import { ConfigLoader } from "../utils/config-loader.js";
 
 export interface ContextArgs {
   depth?: "minimal" | "standard" | "full";
@@ -15,43 +16,77 @@ export async function contextTool(args: any) {
 
   try {
     const output: string[] = [];
-    const gitMemory = new GitMemoryManager();
+    const config = ConfigLoader.load();
+    const hybridMemory = new HybridMemoryManager(config);
 
     output.push("📚 Loading Project Context");
+    output.push(`   Depth: ${depth}`);
+    output.push(`   History: ${includeHistory ? "Enabled" : "Disabled"}`);
     output.push("");
 
+    // Check if initialized
+    const isInit = await hybridMemory.isInitialized();
+    if (!isInit) {
+      output.push("⚠️  Memory not initialized");
+      output.push("   Run #friday-setup first");
+      return {
+        content: [{ type: "text", text: output.join("\n") }],
+      };
+    }
+
     // Load INDEX
-    const index = await gitMemory.readIndex();
+    const index = await hybridMemory.readIndex();
     if (index) {
       output.push("✅ INDEX.md loaded");
     }
 
     // Load current state
-    const state = await gitMemory.readCurrentState();
+    const state = await hybridMemory.readCurrentState();
     if (state) {
       output.push("✅ current-state.md loaded");
+      
+      // Extract current focus
+      const focusMatch = state.match(/## 🎯 Current Focus\n\n(.+?)\n\n/s);
+      if (focusMatch) {
+        output.push("");
+        output.push("Current Focus:");
+        output.push(`   ${focusMatch[1].trim()}`);
+      }
     }
 
     // Load memory files
     if (includeHistory) {
-      const files = await gitMemory.listMemoryFiles();
+      const files = await hybridMemory.listMemoryFiles();
       output.push(`✅ ${files.length} memory file(s) loaded`);
     }
 
-    // Statistics
-    const stats = await gitMemory.getStats();
-    output.push("");
-    output.push("📊 Memory Statistics:");
-    output.push(`   Implementations: ${stats.implementations}`);
-    output.push(`   Decisions: ${stats.decisions}`);
-    output.push(`   Issues: ${stats.issues}`);
-    output.push(`   Total: ${stats.total} files`);
     output.push("");
 
-    output.push("✅ Context loaded successfully");
+    // Statistics
+    const stats = await hybridMemory.getStats();
+    output.push("📊 Memory Statistics:");
+    output.push(`   Mode: ${stats.mode}`);
     output.push("");
-    output.push(`Depth: ${depth}`);
-    output.push(`History included: ${includeHistory ? "Yes" : "No"}`);
+    output.push("   Git Storage:");
+    output.push(`   - Implementations: ${stats.git.implementations}`);
+    output.push(`   - Decisions: ${stats.git.decisions}`);
+    output.push(`   - Issues: ${stats.git.issues}`);
+    output.push(`   - Total: ${stats.git.total} files`);
+
+    if (stats.redis) {
+      output.push("");
+      output.push("   Redis Cache:");
+      output.push(`   - Memory keys: ${stats.redis.memoryKeys}`);
+      output.push(`   - Cache keys: ${stats.redis.cacheKeys}`);
+      output.push(`   - Total: ${stats.redis.totalKeys} keys`);
+    }
+
+    output.push("");
+    output.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    output.push("✅ Context Loaded Successfully");
+    output.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    output.push("");
+    output.push("FRIDAY is ready with full project context.");
 
     return {
       content: [
