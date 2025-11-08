@@ -24,6 +24,14 @@
   ],
   "author": "FRIDAY Development Team",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mnhidayatgani/mcp-friday.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mnhidayatgani/mcp-friday/issues"
+  },
+  "homepage": "https://github.com/mnhidayatgani/mcp-friday#readme",
   "engines": {
     "node": ">=18.0.0"
   },
