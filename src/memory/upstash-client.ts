@@ -35,11 +35,19 @@ export class UpstashMemory {
    */
   async storeSession(sessionId: string, context: SessionContext): Promise<void> {
     const key = `friday:session:${sessionId}`;
+    const data = JSON.stringify(context);
+    
     await this.redis.setex(
       key,
       86400, // 24 hours TTL
-      JSON.stringify(context)
+      data
     );
+    
+    // Verbose logging
+    console.log(`💾 Saved Redis session: ${sessionId}`);
+    console.log(`   Key: ${key}`);
+    console.log(`   TTL: 24 hours`);
+    console.log(`   Size: ${Buffer.byteLength(data, 'utf-8')} bytes`);
   }
 
   /**
@@ -63,7 +71,18 @@ export class UpstashMemory {
     content: string
   ): Promise<void> {
     const key = `friday:${this.projectId}:memory:${type}:${id}`;
+    
+    // Check if updating existing
+    const existing = await this.redis.get(key);
+    const action = existing ? "📝 Updated" : "💾 Saved";
+    
     await this.redis.set(key, content);
+    
+    // Verbose logging
+    console.log(`${action} Redis memory: ${type}/${id}`);
+    console.log(`   Key: ${key}`);
+    console.log(`   Project: ${this.projectId}`);
+    console.log(`   Size: ${Buffer.byteLength(content, 'utf-8')} bytes`);
   }
 
   /**
@@ -71,7 +90,19 @@ export class UpstashMemory {
    */
   async getMemory(type: string, id: string): Promise<string | null> {
     const key = `friday:${this.projectId}:memory:${type}:${id}`;
-    return await this.redis.get<string>(key);
+    const content = await this.redis.get<string>(key);
+    
+    // Verbose logging
+    if (content) {
+      console.log(`📖 Retrieved Redis memory: ${type}/${id}`);
+      console.log(`   Key: ${key}`);
+      console.log(`   Project: ${this.projectId}`);
+      console.log(`   Size: ${Buffer.byteLength(content as string, 'utf-8')} bytes`);
+    } else {
+      console.log(`⚠️  Redis memory not found: ${type}/${id}`);
+    }
+    
+    return content;
   }
 
   /**
