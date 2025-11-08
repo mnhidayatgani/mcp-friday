@@ -17,29 +17,54 @@ SEBELUM melakukan apapun, AI HARUS:
    - Cek folder `.github/memory/`
    - Cek file `INDEX.md` dan `current-state.md`
 
-2. Jika BELUM ada, jalankan LANGSUNG tanpa bertanya:
+2. Jika BELUM ada, jalankan LANGSUNG:
    #friday-setup
    
-   ⚠️ PENTING: 
-   - Jangan buat todo list
-   - Jangan explain step-by-step
-   - Langsung jalankan!
-   - Setup akan otomatis detect .env dan Redis
-   - Jika Redis tidak ada, akan gunakan Git-only mode
-   - JANGAN minta kredensial dari user
+   ⚠️ YANG TERJADI SAAT FIRST-TIME SETUP:
+   a. Deep Project Analysis:
+      - Analisis arsitektur (MVC, feature-based, dll)
+      - Deteksi design patterns
+      - Identifikasi tech stack
+      - Cari file-file penting
+      - Analisis coding conventions
+      - Risk assessment
+   
+   b. Dokumentasi Otomatis Dibuat:
+      - PROJECT-ANALYSIS.md (arsitektur lengkap)
+      - ARCHITECTURE.md (referensi struktur)
+      - CONVENTIONS.md (coding standards)
+      - INDEX.md (project overview)
+      - current-state.md (status terkini)
+   
+   c. Memory Structure Ready:
+      - implementations/ (fitur yang diimplementasi)
+      - decisions/ (keputusan arsitektur)
+      - issues/ (bug fixes)
+      - archive/ (completed items)
+   
+   ⚠️ PENTING:
+   - AI WAJIB membaca PROJECT-ANALYSIS.md sebelum coding
+   - Ikuti patterns yang terdeteksi di ARCHITECTURE.md
+   - Follow conventions di CONVENTIONS.md
+   - Jangan modifikasi high-risk areas tanpa hati-hati
+   - JANGAN minta kredensial dari user - setup otomatis
 
-3. Setelah setup, LANGSUNG load context (tanpa report panjang):
-   #friday-context
+3. Setelah setup, WAJIB membaca dokumentasi (SILENT):
+   - Baca PROJECT-ANALYSIS.md
+   - Baca ARCHITECTURE.md
+   - Baca CONVENTIONS.md
+   - Load context: #friday-context
 
 4. Untuk setiap pertanyaan user, search memory dulu:
    #friday-search "<topik yang relevan>"
 ```
 
 **CATATAN PENTING:**
-- FRIDAY otomatis setup saat `npm install` (postinstall hook)
-- User TIDAK PERLU masukkan kredensial manual
-- Jika Redis belum ada, FRIDAY otomatis gunakan Git-only mode
-- AI TIDAK BOLEH minta user configure Redis - setup otomatis
+- FRIDAY otomatis analisis project saat pertama kali
+- Dokumentasi lengkap dibuat otomatis
+- AI HARUS baca dokumentasi sebelum coding
+- Risk areas ter-identifikasi untuk keamanan
+- AI TIDAK BOLEH minta user setup apapun
 
 ### 2️⃣ **Setiap Kali Membuat Perubahan Kode**
 
