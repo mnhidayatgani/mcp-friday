@@ -12,7 +12,7 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
-import { setupTool } from "./tools/setup.js";
+import { setupTool } from "./tools/setup/index.js";
 import { searchTool } from "./tools/search.js";
 import { syncTool } from "./tools/sync.js";
 import { contextTool } from "./tools/context.js";
