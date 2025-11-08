@@ -13,16 +13,20 @@
 ```markdown
 SEBELUM melakukan apapun, AI HARUS:
 
-1. Cek apakah FRIDAY sudah disetup:
+1. Cek apakah FRIDAY sudah disetup (SILENT CHECK):
    - Cek folder `.github/memory/`
    - Cek file `INDEX.md` dan `current-state.md`
 
 2. Jika BELUM ada, jalankan LANGSUNG tanpa bertanya:
    #friday-setup
    
-   ⚠️ PENTING: Jangan buat todo list, jangan explain, langsung jalankan!
-   ⚠️ Setelah setup selesai, langsung lanjut ke step berikutnya.
-   ⚠️ Jangan tanya user untuk config Redis - langsung cek .env
+   ⚠️ PENTING: 
+   - Jangan buat todo list
+   - Jangan explain step-by-step
+   - Langsung jalankan!
+   - Setup akan otomatis detect .env dan Redis
+   - Jika Redis tidak ada, akan gunakan Git-only mode
+   - JANGAN minta kredensial dari user
 
 3. Setelah setup, LANGSUNG load context (tanpa report panjang):
    #friday-context
@@ -30,6 +34,12 @@ SEBELUM melakukan apapun, AI HARUS:
 4. Untuk setiap pertanyaan user, search memory dulu:
    #friday-search "<topik yang relevan>"
 ```
+
+**CATATAN PENTING:**
+- FRIDAY otomatis setup saat `npm install` (postinstall hook)
+- User TIDAK PERLU masukkan kredensial manual
+- Jika Redis belum ada, FRIDAY otomatis gunakan Git-only mode
+- AI TIDAK BOLEH minta user configure Redis - setup otomatis
 
 ### 2️⃣ **Setiap Kali Membuat Perubahan Kode**
 
