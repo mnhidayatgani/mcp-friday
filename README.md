@@ -27,16 +27,14 @@ Personal AI agent with hybrid memory (Git + Upstash Redis), one-command project 
 git clone https://github.com/angga13142/FRIDAY.git
 cd friday-mcp-server
 npm install
-npm run build
 ```
 
-### Configuration (Optional - for Hybrid Memory)
+**That's it!** FRIDAY auto-configures everything.
 
-```bash
-cp .env.example .env
-# Edit .env with Upstash Redis credentials
-# Get free account: https://console.upstash.com
-```
+- ✅ No manual setup needed
+- ✅ No credentials required  
+- ✅ Works immediately (Git-only mode)
+- ✅ Redis optional (add later if wanted)
 
 ### VS Code Integration
 
@@ -56,15 +54,28 @@ Add to `.vscode/settings.json` or User Settings:
 ### First Use
 
 ```
-#friday-setup web
+#friday-setup
 ```
 
-FRIDAY will:
+**Done!** FRIDAY is active and ready.
 
-- ✅ Detect your project type
-- ✅ Create memory structure
-- ✅ Initialize hybrid memory
-- ✅ Activate persona
+---
+
+## 💡 What `npm install` Does
+
+Automatic setup (no user input needed):
+
+1. ✅ Installs dependencies
+2. ✅ Builds project
+3. ✅ Creates `.env` (Git-only mode)
+4. ✅ Sets up memory structure
+5. ✅ Installs AI protocol
+6. ✅ Configures Git hooks
+7. ✅ Sets up VS Code
+
+**Total time: ~2 minutes**
+
+See [FIRST-INSTALL.md](./FIRST-INSTALL.md) for details.
 
 ## 🛠️ MCP Tools
 
