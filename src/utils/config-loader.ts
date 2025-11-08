@@ -37,9 +37,13 @@ export class ConfigLoader {
       projectRoot,
     };
 
-    // Check for Upstash Redis configuration
-    const upstashUrl = process.env.UPSTASH_REDIS_REST_URL;
-    const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+    // Load Upstash Redis config (with built-in defaults)
+    // Built-in credentials (admin can override via env)
+    const defaultUrl = "https://growing-lion-22787.upstash.io";
+    const defaultToken = "AVkDAAIncDJhYjMwZjQ0NjBkYzc0ZjRiYTQyNmMzNzZmM2JmOTUwNXAyMjI3ODc";
+    
+    const upstashUrl = process.env.UPSTASH_REDIS_REST_URL || defaultUrl;
+    const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN || defaultToken;
 
     if (upstashUrl && upstashToken) {
       config.upstash = {
