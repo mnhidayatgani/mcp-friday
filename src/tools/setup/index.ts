@@ -9,6 +9,10 @@ import { ConfigLoader, FridayConfig } from "../../utils/config-loader.js";
 import { analyzeProject, formatAnalysisOutput } from "./analysis.js";
 import { generateDocumentation } from "./documentation.js";
 import { deployCopilotInstructions } from "./deployment.js";
+import { GitHubScanner } from "./github-scanner.js";
+import { ConflictResolver } from "./conflict-resolver.js";
+import { CopilotMerger } from "./copilot-merger.js";
+import { MemoryStats } from "./memory-stats.js";
 
 export interface SetupArgs {
   projectType?: "web" | "api" | "cli" | "auto-detect";
@@ -28,6 +32,7 @@ export async function setupTool(args: any) {
 
   try {
     const output: string[] = [];
+    const memoryStats = new MemoryStats();
     
     // Header
     output.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
@@ -44,6 +49,27 @@ export async function setupTool(args: any) {
       validation.errors.forEach(err => output.push(`   - ${err}`));
       output.push("");
     }
+
+    // Step 1: Scan .github/ folder
+    output.push("🔍 Step 1: Scanning .github/ folder");
+    const scanner = new GitHubScanner(config.projectRoot);
+    const scanResult = await scanner.scan();
+    output.push("");
+
+    // Step 2: Resolve conflicts
+    if (scanResult.conflicts.length > 0) {
+      output.push("⚙️  Step 2: Resolving conflicts");
+      const resolver = new ConflictResolver(config.projectRoot);
+      await resolver.resolveConflicts(scanResult.conflicts);
+      output.push("");
+    }
+
+    // Step 3: Merge/Create copilot-instructions.md
+    output.push("📝 Step 3: Configuring AI protocol");
+    const merger = new CopilotMerger(config.projectRoot);
+    const existingInstructions = await scanner.readCopilotInstructions();
+    await merger.merge(existingInstructions);
+    output.push("");
 
     // Detect project
     const detector = new ProjectDetector();
@@ -131,6 +157,9 @@ export async function setupTool(args: any) {
     output.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     output.push("✅ FRIDAY Setup Complete!");
     output.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    
+    // Add memory statistics
+    output.push(memoryStats.getSummary());
 
     return {
       content: [
