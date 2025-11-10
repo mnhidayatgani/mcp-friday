@@ -94,6 +94,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case "friday-context":
         return await contextTool(args);
 
+      case "friday-greeting":
+        return await greetingTool();
+
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
