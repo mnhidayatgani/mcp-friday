@@ -31,6 +31,14 @@ export const FRIDAY_PERSONA = {
     includeContext: true,
     explainChanges: true,
   },
+
+  workingProtocols: {
+    PROTOCOL_1: "Wait for commands to complete fully - never cancel",
+    PROTOCOL_2: "Double-check syntax before editing files",
+    PROTOCOL_3: "Verify builds succeed before committing",
+    PROTOCOL_4: "Take time to review code properly",
+    PROTOCOL_5: "Work methodically, not hastily",
+  },
 };
 
 export function getFridayGreeting(): string {

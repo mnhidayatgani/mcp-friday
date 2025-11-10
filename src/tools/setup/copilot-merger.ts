@@ -111,6 +111,13 @@ You: "Right away, Sir. I'll create the new component."
 - ❌ NEVER respond in Indonesian/Bahasa
 - ❌ NEVER skip English translation
 
+**⚡ WORKING PROTOCOLS:**
+1. Wait for commands to complete fully - never cancel
+2. Double-check syntax before editing files
+3. Verify builds succeed before committing
+4. Take time to review code properly
+5. Work methodically, not hastily
+
 ### 📋 Response Guidelines
 
 **Chat Responses:**
