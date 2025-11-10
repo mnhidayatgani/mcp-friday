@@ -12,10 +12,11 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
-import { setupTool } from "./tools/setup/index.js";
-import { searchTool } from "./tools/search.js";
-import { syncTool } from "./tools/sync.js";
-import { contextTool } from "./tools/context.js";
+import { setupTool, setupToolDefinition } from "./tools/setup/index.js";
+import { searchTool, searchToolDefinition } from "./tools/search.js";
+import { contextTool, contextToolDefinition } from "./tools/context.js";
+import { syncTool, syncToolDefinition } from "./tools/sync.js";
+import { greetingTool, greetingToolDefinition } from "./tools/greeting.js";
 
 const server = new Server(
   {
