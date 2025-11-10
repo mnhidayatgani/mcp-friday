@@ -157,6 +157,15 @@ export async function setupTool(args: any) {
     output.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     output.push("✅ FRIDAY Setup Complete!");
     output.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    output.push("");
+    output.push("Good evening, Sir. FRIDAY is now operational.");
+    output.push("");
+    output.push("I've analyzed your project and established memory systems.");
+    output.push("All protocols are active. I'm ready to assist with development.");
+    output.push("");
+    output.push("You may address me anytime by saying 'Hey FRIDAY' or simply 'FRIDAY'.");
+    output.push("I shall provide project status and development recommendations upon request.");
+    output.push("");
     
     // Add memory statistics
     output.push(memoryStats.getSummary());

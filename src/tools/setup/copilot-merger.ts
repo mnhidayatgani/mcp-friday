@@ -224,9 +224,16 @@ Total: 15.6 KB
 | Command | Purpose |
 |---------|---------|
 | \`#friday-setup\` | Initialize FRIDAY (first time) |
+| \`#friday-greeting\` | Get status & recommendations |
 | \`#friday-search [query]\` | Search memory |
 | \`#friday-context\` | Load full context |
 | \`#friday-sync\` | Sync to Redis (optional) |
+
+**Greeting FRIDAY:**
+When user says "hey friday", "hi friday", or "friday":
+- Respond with: \`#friday-greeting\`
+- Provides project status, progress, next tasks
+- Gives development recommendations
 
 ---
 
