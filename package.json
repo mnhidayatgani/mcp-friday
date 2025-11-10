@@ -1,12 +1,18 @@
 {
-  "name": "friday-mcp-server",
+  "name": "@mnhidayatgani/friday-mcp",
   "version": "1.0.0",
-  "description": "FRIDAY AI Agent - MCP Server with Upstash integration",
+  "description": "FRIDAY AI Agent - MCP Server with Upstash integration and project intelligence",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
     "friday-mcp": "dist/index.js"
   },
+  "files": [
+    "dist/**/*",
+    "icon.svg",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
