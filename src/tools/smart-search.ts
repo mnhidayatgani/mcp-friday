@@ -6,6 +6,7 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { GitMemoryManager } from "../memory/git-manager.js";
+import { Context7Client } from "../memory/context7-client.js";
 import { ConfigLoader } from "../utils/config-loader.js";
 
 interface SearchResult {
@@ -27,10 +28,12 @@ interface SmartSearchResult {
 export class SmartSearchStrategy {
   private projectRoot: string;
   private gitManager: GitMemoryManager;
+  private context7Client: Context7Client;
 
   constructor(projectRoot: string) {
     this.projectRoot = projectRoot;
     this.gitManager = new GitMemoryManager(projectRoot);
+    this.context7Client = new Context7Client();
   }
 
   /**
@@ -170,17 +173,25 @@ export class SmartSearchStrategy {
    * Search Context7 for library documentation
    */
   private async searchContext7(query: string, context?: string): Promise<SearchResult[]> {
-    // This would integrate with Context7 API
-    // For now, return placeholder indicating external docs needed
+    const results: SearchResult[] = [];
     
-    const libraryHints = this.detectLibraries(query, context);
+    // Search for relevant libraries
+    const libraries = await this.context7Client.searchLibraries(query);
     
-    return libraryHints.map(lib => ({
-      source: "context7" as const,
-      title: `${lib} Documentation`,
-      content: `Consult ${lib} official documentation for: ${query}`,
-      relevance: 0.6,
-    }));
+    for (const lib of libraries.slice(0, 3)) {
+      const docs = await this.context7Client.getDocs(lib.id, query);
+      
+      if (docs) {
+        results.push({
+          source: "context7" as const,
+          title: `${lib.name} Documentation`,
+          content: docs.content,
+          relevance: docs.relevance,
+        });
+      }
+    }
+    
+    return results;
   }
 
   /**
