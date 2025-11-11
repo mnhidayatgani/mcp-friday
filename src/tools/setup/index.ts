@@ -15,6 +15,7 @@ import { CopilotMerger } from "./copilot-merger.js";
 import { MemoryStats } from "./memory-stats.js";
 import { ExtensionMemoryMigrator } from "./extension-migrator.js";
 import { GitHubOptimizer } from "./github-optimizer.js";
+import { setupToolV2 } from "./setup-v2.js";
 
 export interface SetupArgs {
   projectType?: "web" | "api" | "cli" | "auto-detect";
@@ -23,9 +24,18 @@ export interface SetupArgs {
 }
 
 /**
- * Main setup function - orchestrates the entire setup process
+ * Main setup function - uses optimized V2 workflow
  */
 export async function setupTool(args: any) {
+  // Use V2 optimized workflow
+  return await setupToolV2(args);
+}
+
+/**
+ * Legacy setup function (V1) - kept for reference
+ * @deprecated Use setupToolV2 instead
+ */
+export async function setupToolV1(args: any) {
   const {
     projectType = "auto-detect",
     enableRedis = true,
