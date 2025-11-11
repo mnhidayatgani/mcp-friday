@@ -15,9 +15,8 @@ export interface BrowserEmulateArgs {
   height?: number;
 }
 
-export async function browserEmulateTool(args: any) {
-  const { action, device, latitude, longitude, timezone, width, height } =
-    args as BrowserEmulateArgs;
+export async function browserEmulateTool(args: BrowserEmulateArgs) {
+  const { action, device, latitude, longitude, timezone, width, height } = args;
 
   try {
     const browser = await getBrowserManager();
@@ -130,8 +129,10 @@ export async function browserEmulateTool(args: any) {
         };
       }
 
-      default:
-        throw new Error(`Unknown action: ${action}`);
+      default: {
+        const unknownAction: never = action;
+        throw new Error(`Unknown action: ${unknownAction}`);
+      }
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

@@ -1,10 +1,10 @@
 # Memory Index
 
-**Project:** friday-mcp-server  
+**Project:** @mnhidayatgani/friday-mcp  
 **Type:** unknown  
 **Tech Stack:** TypeScript, Jest  
-**Created:** 2025-11-08T14:40:58.894Z  
-**Last Updated:** 2025-11-08T14:40:58.894Z
+**Created:** 2025-11-11T10:03:11.479Z  
+**Last Updated:** 2025-11-11T10:03:11.479Z
 
 ---
 

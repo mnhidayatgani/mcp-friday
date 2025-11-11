@@ -11,8 +11,8 @@ export interface BrowserNetworkArgs {
   blockedUrls?: string[];
 }
 
-export async function browserNetworkTool(args: any) {
-  const { action, throttleType = "None", blockedUrls = [] } = args as BrowserNetworkArgs;
+export async function browserNetworkTool(args: BrowserNetworkArgs) {
+  const { action, throttleType = "None", blockedUrls = [] } = args;
 
   try {
     const browser = await getBrowserManager();
@@ -79,7 +79,12 @@ export async function browserNetworkTool(args: any) {
       }
 
       case "monitor": {
-        const requests: any[] = [];
+        interface RequestInfo {
+          url: string;
+          method: string;
+          resourceType: string;
+        }
+        const requests: RequestInfo[] = [];
 
         page.on("request", (request) => {
           requests.push({
@@ -99,8 +104,10 @@ export async function browserNetworkTool(args: any) {
         };
       }
 
-      default:
-        throw new Error(`Unknown action: ${action}`);
+      default: {
+        const unknownAction: never = action;
+        throw new Error(`Unknown action: ${unknownAction}`);
+      }
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

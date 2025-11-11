@@ -9,8 +9,8 @@ export interface BrowserConsoleArgs {
   onlyErrors?: boolean;
 }
 
-export async function browserConsoleTool(args: any) {
-  const { action, onlyErrors = false } = args as BrowserConsoleArgs;
+export async function browserConsoleTool(args: BrowserConsoleArgs) {
+  const { action, onlyErrors = false } = args;
 
   try {
     const browser = await getBrowserManager();
@@ -71,8 +71,10 @@ export async function browserConsoleTool(args: any) {
         };
       }
 
-      default:
-        throw new Error(`Unknown action: ${action}`);
+      default: {
+        const unknownAction: never = action;
+        throw new Error(`Unknown action: ${unknownAction}`);
+      }
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

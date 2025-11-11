@@ -8,3 +8,6 @@ dist/
 *.tsbuildinfo
 coverage/
 .upstash/
+
+# FRIDAY backup folder (AI agents should ignore)
+.github/backup/
