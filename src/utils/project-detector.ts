@@ -35,10 +35,8 @@ export class ProjectDetector {
 
     // Detect from package.json
     if (packageJson) {
-      const deps = {
-        ...packageJson.dependencies,
-        ...packageJson.devDependencies,
-      };
+      const pkg = packageJson as { dependencies?: Record<string,string>; devDependencies?: Record<string,string>; name?: string };
+      const deps: Record<string,string> = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
 
       // Web frameworks
       if (deps["next"] || deps["@next/core"]) {
@@ -124,7 +122,7 @@ export class ProjectDetector {
       confidence = 0.6;
     }
 
-    const projectName = packageJson?.name || path.basename(this.projectRoot);
+  const projectName = (packageJson as { name?: string } | null)?.name || path.basename(this.projectRoot);
 
     return {
       type,
@@ -137,11 +135,11 @@ export class ProjectDetector {
   /**
    * Read package.json
    */
-  private async readPackageJson(): Promise<any | null> {
+  private async readPackageJson(): Promise<Record<string, unknown> | null> {
     try {
       const pkgPath = path.join(this.projectRoot, "package.json");
       const content = await fs.readFile(pkgPath, "utf-8");
-      return JSON.parse(content);
+  return JSON.parse(content) as Record<string, unknown>;
     } catch {
       return null;
     }

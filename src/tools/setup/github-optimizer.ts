@@ -68,8 +68,8 @@ export class GitHubOptimizer {
               result.kept.push(action.path);
               break;
           }
-        } catch (error) {
-          const errorMsg = error instanceof Error ? error.message : String(error);
+        } catch (err) {
+          const errorMsg = err instanceof Error ? err.message : String(err);
           result.errors.push(`${action.path}: ${errorMsg}`);
         }
       }
@@ -77,8 +77,8 @@ export class GitHubOptimizer {
       // Ensure required structure
       await this.ensureRequiredStructure(result);
 
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : String(error);
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : String(err);
       result.errors.push(`Optimization failed: ${errorMsg}`);
     }
 
@@ -110,7 +110,7 @@ export class GitHubOptimizer {
           }
         }
       }
-    } catch (error) {
+    } catch {
       // .github might not exist yet
     }
 
@@ -191,7 +191,7 @@ export class GitHubOptimizer {
   /**
    * Get required files list
    */
-  private getRequiredFiles() {
+  private getRequiredFiles(): { name: string; reason: string }[] {
     return [
       {
         name: "copilot-instructions.md",
@@ -222,7 +222,7 @@ export class GitHubOptimizer {
       } else {
         await fs.unlink(fullPath);
       }
-    } catch (error) {
+    } catch {
       // File might not exist
     }
   }
@@ -234,23 +234,18 @@ export class GitHubOptimizer {
     const fullPath = path.join(this.projectRoot, relativePath);
     const fileName = path.basename(relativePath);
 
-    try {
-      let content = await fs.readFile(fullPath, "utf-8");
+    let content = await fs.readFile(fullPath, "utf-8");
 
-      // Apply modifications based on file type
-      if (fileName === "copilot-instructions.md") {
-        content = this.optimizeCopilotInstructions(content);
-      } else if (fileName === "RESPONSE-STYLE.md") {
-        content = this.optimizeResponseStyle(content);
-      } else if (fileName === "WORKFLOW.md") {
-        content = this.optimizeWorkflow(content);
-      }
-
-      await fs.writeFile(fullPath, content, "utf-8");
-    } catch (error) {
-      // File might not exist or can't be read
-      throw error;
+    // Apply modifications based on file type
+    if (fileName === "copilot-instructions.md") {
+      content = this.optimizeCopilotInstructions(content);
+    } else if (fileName === "RESPONSE-STYLE.md") {
+      content = this.optimizeResponseStyle(content);
+    } else if (fileName === "WORKFLOW.md") {
+      content = this.optimizeWorkflow(content);
     }
+
+    await fs.writeFile(fullPath, content, "utf-8");
   }
 
   /**
@@ -441,7 +436,7 @@ Initial Development
   /**
    * Ensure required directory structure
    */
-  private async ensureRequiredStructure(result: OptimizationResult): Promise<void> {
+  private async ensureRequiredStructure(_result: OptimizationResult): Promise<void> {
     const requiredDirs = [
       "memory",
       "memory/implementations",
@@ -464,7 +459,7 @@ Initial Development
         } catch {
           await fs.writeFile(gitkeep, "", "utf-8");
         }
-      } catch (error) {
+      } catch {
         // Directory might already exist
       }
     }

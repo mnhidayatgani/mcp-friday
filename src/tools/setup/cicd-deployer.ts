@@ -79,7 +79,7 @@ export class CICDDeployer {
       // Generate instructions
       this.generateInstructions(result);
 
-    } catch (error) {
+    } catch {
       // CI/CD deployment is optional
     }
 
@@ -134,9 +134,7 @@ export class CICDDeployer {
    * Generate CI/CD pipeline configuration
    */
   private generateCIPipeline(): string {
-    const hasPackageJson = this.config.projectType.includes("node") || 
-                          this.config.projectType.includes("web") ||
-                          this.config.projectType.includes("api");
+  // Project types 'node', 'web', 'api' are supported by default
 
     return `name: CI/CD Pipeline
 

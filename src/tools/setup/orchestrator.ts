@@ -3,8 +3,6 @@
  * Intelligent workflow optimization for conflict-free setup
  */
 
-import { HybridMemoryManager } from "../../memory/hybrid-manager.js";
-import { ConfigLoader } from "../../utils/config-loader.js";
 
 export interface SetupPhase {
   name: string;
@@ -14,11 +12,11 @@ export interface SetupPhase {
   execute: () => Promise<PhaseResult>;
 }
 
-export interface PhaseResult {
+export interface PhaseResult<Data = unknown> {
   success: boolean;
   output: string[];
   errors: string[];
-  data?: any;
+  data?: Data;
 }
 
 export interface OrchestrationResult {
@@ -30,7 +28,7 @@ export interface OrchestrationResult {
 export class SetupOrchestrator {
   private phases: Map<string, SetupPhase> = new Map();
   private executedPhases: Set<string> = new Set();
-  private phaseData: Map<string, any> = new Map();
+  private phaseData: Map<string, unknown> = new Map();
 
   /**
    * Register a setup phase
@@ -74,8 +72,8 @@ export class SetupOrchestrator {
             result.success = false;
             // Continue with non-critical phases
           }
-        } catch (error) {
-          const errorMsg = error instanceof Error ? error.message : String(error);
+        } catch (err) {
+          const errorMsg = err instanceof Error ? err.message : String(err);
           result.phases.set(phaseName, {
             success: false,
             output: [],
@@ -84,7 +82,7 @@ export class SetupOrchestrator {
           result.success = false;
         }
       }
-    } catch (error) {
+    } catch {
       result.success = false;
     }
 
@@ -100,7 +98,7 @@ export class SetupOrchestrator {
     const visited = new Set<string>();
     const temp = new Set<string>();
 
-    const visit = (name: string) => {
+  const visit = (name: string): void => {
       if (temp.has(name)) {
         throw new Error(`Circular dependency detected: ${name}`);
       }
@@ -138,8 +136,8 @@ export class SetupOrchestrator {
   /**
    * Get data from previously executed phase
    */
-  getPhaseData(phaseName: string): any {
-    return this.phaseData.get(phaseName);
+  getPhaseData<T = unknown>(phaseName: string): T | undefined {
+    return this.phaseData.get(phaseName) as T | undefined;
   }
 
   /**
