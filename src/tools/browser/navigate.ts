@@ -12,13 +12,13 @@ export interface BrowserNavigateArgs {
   waitUntil?: WaitUntil;
 }
 
-export async function browserNavigateTool(args: any) {
+export async function browserNavigateTool(args: BrowserNavigateArgs) {
   const {
     url,
     action,
     timeout,
     waitUntil = "load",
-  } = args as BrowserNavigateArgs;
+  } = args;
 
   try {
     const browser = await getBrowserManager();

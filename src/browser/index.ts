@@ -4,7 +4,7 @@
  */
 
 import { chromium, firefox, webkit } from "playwright";
-import type { Browser, Page, BrowserContext, CDPSession } from "playwright";
+import type { Page, CDPSession } from "playwright";
 import type { BrowserConfig, BrowserState, ConsoleMessage } from "./types.js";
 import { DEFAULT_BROWSER_CONFIG, validateBrowserConfig } from "./browser-config.js";
 
@@ -223,7 +223,7 @@ export class BrowserManager {
     if (this.state.cdpSession) {
       try {
         await this.state.cdpSession.detach();
-      } catch (error) {
+      } catch {
         // Ignore detach errors
       }
       this.state.cdpSession = null;

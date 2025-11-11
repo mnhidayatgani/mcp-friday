@@ -22,7 +22,7 @@ export class Context7Client {
   /**
    * Resolve library ID from name
    */
-  async resolveLibrary(libraryName: string): Promise<Context7Library | null> {
+  resolveLibrary(libraryName: string): Promise<Context7Library | null> {
     try {
       // Comprehensive library mapping
       const knownLibraries: Record<string, Context7Library> = {
@@ -155,23 +155,23 @@ export class Context7Client {
       };
       
       const lib = knownLibraries[libraryName.toLowerCase()];
-      return lib || null;
+      return Promise.resolve(lib || null);
     } catch {
-      return null;
+      return Promise.resolve(null);
     }
   }
 
   /**
    * Get documentation for a library
    */
-  async getDocs(libraryId: string, topic?: string, maxTokens = 5000): Promise<Context7Docs | null> {
+  getDocs(libraryId: string, topic?: string, _maxTokens = 5000): Promise<Context7Docs | null> {
     try {
       // This is a placeholder that returns useful info
       // In production, this would call the actual Context7 MCP server
       
       const libraryName = libraryId.split("/").pop() || libraryId;
       
-      return {
+      return Promise.resolve({
         library: libraryName,
         content: `Please consult ${libraryName} official documentation for: ${topic || "general usage"}
         
@@ -182,16 +182,16 @@ Common resources:
 
 For MCP integration with Context7, use the upstash-conte MCP server to fetch real-time documentation.`,
         relevance: 0.6,
-      };
+      });
     } catch {
-      return null;
+      return Promise.resolve(null);
     }
   }
 
   /**
    * Search for libraries by topic
    */
-  async searchLibraries(topic: string): Promise<Context7Library[]> {
+  searchLibraries(topic: string): Promise<Context7Library[]> {
     const libraries: Context7Library[] = [];
     const topicLower = topic.toLowerCase();
     
@@ -355,7 +355,7 @@ For MCP integration with Context7, use the upstash-conte MCP server to fetch rea
       );
     }
     
-    return libraries;
+    return Promise.resolve(libraries);
   }
 }
 

@@ -11,8 +11,8 @@ export interface BrowserClickArgs {
   clickCount?: number;
 }
 
-export async function browserClickTool(args: any) {
-  const { selector, button = "left", clickCount = 1 } = args as BrowserClickArgs;
+export async function browserClickTool(args: BrowserClickArgs) {
+  const { selector, button = "left", clickCount = 1 } = args;
 
   try {
     const browser = await getBrowserManager();
@@ -48,8 +48,8 @@ export interface BrowserTypeArgs {
   delay?: number;
 }
 
-export async function browserTypeTool(args: any) {
-  const { selector, text, delay = 0 } = args as BrowserTypeArgs;
+export async function browserTypeTool(args: BrowserTypeArgs) {
+  const { selector, text, delay = 0 } = args;
 
   try {
     const browser = await getBrowserManager();
@@ -84,8 +84,8 @@ export interface BrowserPressArgs {
   key: string;
 }
 
-export async function browserPressTool(args: any) {
-  const { key } = args as BrowserPressArgs;
+export async function browserPressTool(args: BrowserPressArgs) {
+  const { key } = args;
 
   try {
     const browser = await getBrowserManager();

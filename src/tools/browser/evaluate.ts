@@ -7,20 +7,22 @@ import { getBrowserManager } from "../../browser/index.js";
 
 export interface BrowserEvaluateArgs {
   function: string;
-  args?: any[];
+  args?: unknown[];
 }
 
-export async function browserEvaluateTool(args: any) {
-  const { function: functionString, args: functionArgs = [] } = args as BrowserEvaluateArgs;
+export async function browserEvaluateTool(args: BrowserEvaluateArgs) {
+  const { function: functionString, args: functionArgs = [] } = args;
 
   try {
     const browser = await getBrowserManager();
     const page = browser.getCurrentPage();
 
     // Create function from string
-    const evalFunction = new Function("return " + functionString)();
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval
+    const evalFunction = new Function("return " + functionString)() as (...args: unknown[]) => unknown;
 
     // Execute in page context
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const result = await page.evaluate(evalFunction, ...functionArgs);
 
     // Format result for display

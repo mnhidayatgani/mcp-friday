@@ -71,7 +71,7 @@ export class HybridMemoryManager {
 
     // Sync to Redis if available
     if (this.redis) {
-      await this.redis.storeProjectIndex(project);
+      await this.redis.storeProjectIndex(project as unknown as Record<string, unknown>);
     }
   }
 
@@ -157,7 +157,7 @@ export class HybridMemoryManager {
         await this.redis.storeMemory(file.type, id, file.content);
         synced++;
       } catch (error) {
-        errors.push(`Failed to sync ${file.path}: ${error}`);
+        errors.push(`Failed to sync ${file.path}: ${String(error)}`);
       }
     }
 
@@ -168,7 +168,7 @@ export class HybridMemoryManager {
         await this.redis.storeProjectIndex({ index });
       }
     } catch (error) {
-      errors.push(`Failed to sync index: ${error}`);
+      errors.push(`Failed to sync index: ${String(error)}`);
     }
 
     return { synced, errors };
@@ -184,9 +184,10 @@ export class HybridMemoryManager {
   }> {
     const gitStats = await this.git.getStats();
 
-    const stats: any = {
+    const stats = {
       git: gitStats,
-      mode: this.redis ? "hybrid" : "git-only",
+      mode: this.redis ? "hybrid" as const : "git-only" as const,
+      redis: undefined as { totalKeys: number; memoryKeys: number; cacheKeys: number; } | undefined,
     };
 
     if (this.redis) {
@@ -206,7 +207,7 @@ export class HybridMemoryManager {
 
     // Fallback to Redis
     if (this.redis) {
-      const redisIndex = await this.redis.getProjectIndex();
+      const redisIndex = await this.redis.getProjectIndex() as { index?: string } | null;
       if (redisIndex?.index) return redisIndex.index;
     }
 

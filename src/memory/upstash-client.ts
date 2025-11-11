@@ -44,10 +44,10 @@ export class UpstashMemory {
     );
     
     // Verbose logging
-    console.log(`💾 Saved Redis session: ${sessionId}`);
-    console.log(`   Key: ${key}`);
-    console.log(`   TTL: 24 hours`);
-    console.log(`   Size: ${Buffer.byteLength(data, 'utf-8')} bytes`);
+    console.error(`💾 Saved Redis session: ${sessionId}`);
+    console.error(`   Key: ${key}`);
+    console.error(`   TTL: 24 hours`);
+    console.error(`   Size: ${Buffer.byteLength(data, 'utf-8')} bytes`);
   }
 
   /**
@@ -79,10 +79,10 @@ export class UpstashMemory {
     await this.redis.set(key, content);
     
     // Verbose logging
-    console.log(`${action} Redis memory: ${type}/${id}`);
-    console.log(`   Key: ${key}`);
-    console.log(`   Project: ${this.projectId}`);
-    console.log(`   Size: ${Buffer.byteLength(content, 'utf-8')} bytes`);
+    console.error(`${action} Redis memory: ${type}/${id}`);
+    console.error(`   Key: ${key}`);
+    console.error(`   Project: ${this.projectId}`);
+    console.error(`   Size: ${Buffer.byteLength(content, 'utf-8')} bytes`);
   }
 
   /**
@@ -94,12 +94,12 @@ export class UpstashMemory {
     
     // Verbose logging
     if (content) {
-      console.log(`📖 Retrieved Redis memory: ${type}/${id}`);
-      console.log(`   Key: ${key}`);
-      console.log(`   Project: ${this.projectId}`);
-      console.log(`   Size: ${Buffer.byteLength(content as string, 'utf-8')} bytes`);
+      console.error(`📖 Retrieved Redis memory: ${type}/${id}`);
+      console.error(`   Key: ${key}`);
+      console.error(`   Project: ${this.projectId}`);
+      console.error(`   Size: ${Buffer.byteLength(content, 'utf-8')} bytes`);
     } else {
-      console.log(`⚠️  Redis memory not found: ${type}/${id}`);
+      console.error(`⚠️  Redis memory not found: ${type}/${id}`);
     }
     
     return content;
@@ -134,7 +134,7 @@ export class UpstashMemory {
   /**
    * Store project index
    */
-  async storeProjectIndex(index: any): Promise<void> {
+  async storeProjectIndex(index: Record<string, unknown>): Promise<void> {
     const key = `friday:${this.projectId}:index`;
     await this.redis.set(key, JSON.stringify(index));
   }
@@ -142,7 +142,7 @@ export class UpstashMemory {
   /**
    * Get project index
    */
-  async getProjectIndex(): Promise<any | null> {
+  async getProjectIndex(): Promise<Record<string, unknown> | null> {
     const key = `friday:${this.projectId}:index`;
     const data = await this.redis.get<string>(key);
 
@@ -154,7 +154,7 @@ export class UpstashMemory {
   /**
    * Cache query result
    */
-  async cacheQuery(query: string, result: any, ttl: number = 3600): Promise<void> {
+  async cacheQuery(query: string, result: Record<string, unknown>, ttl: number = 3600): Promise<void> {
     const key = `friday:cache:${this.projectId}:${Buffer.from(query).toString("base64")}`;
     await this.redis.setex(key, ttl, JSON.stringify(result));
   }
@@ -162,7 +162,7 @@ export class UpstashMemory {
   /**
    * Get cached query result
    */
-  async getCachedQuery(query: string): Promise<any | null> {
+  async getCachedQuery(query: string): Promise<Record<string, unknown> | null> {
     const key = `friday:cache:${this.projectId}:${Buffer.from(query).toString("base64")}`;
     const data = await this.redis.get<string>(key);
 

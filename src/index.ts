@@ -34,6 +34,12 @@ import {
   browserEmulateTool,
   browserStorageTool,
 } from "./tools/browser/index.js";
+import type { BrowserNavigateArgs } from "./tools/browser/navigate.js";
+import type { BrowserEvaluateArgs } from "./tools/browser/evaluate.js";
+import type { BrowserConsoleArgs } from "./tools/browser/console.js";
+import type { BrowserClickArgs, BrowserTypeArgs, BrowserPressArgs } from "./tools/browser/interact.js";
+import type { BrowserNetworkArgs } from "./tools/browser/network.js";
+import type { BrowserEmulateArgs } from "./tools/browser/emulate.js";
 import { cleanupBrowserManager } from "./browser/index.js";
 
 const server = new Server(
@@ -49,7 +55,7 @@ const server = new Server(
 );
 
 // List available tools
-  server.setRequestHandler(ListToolsRequestSchema, async () => {
+  server.setRequestHandler(ListToolsRequestSchema, () => {
     return {
       tools: [
         {
@@ -299,8 +305,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case "friday-smart-search": {
         const config = ConfigLoader.load();
         const smartSearch = new SmartSearchStrategy(config.projectRoot);
-        const query = (args as any)?.query || "";
-        const featureContext = (args as any)?.featureContext;
+        const query = (args as { query?: string })?.query || "";
+        const featureContext = (args as { featureContext?: string })?.featureContext;
         const result = await smartSearch.search(query, featureContext);
         return {
           content: [
@@ -313,40 +319,40 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case "browser-navigate":
-        return await browserNavigateTool(args);
+        return await browserNavigateTool((args || {}) as unknown as BrowserNavigateArgs);
 
       case "browser-screenshot":
         return await browserScreenshotTool(args);
 
       case "browser-evaluate":
-        return await browserEvaluateTool(args);
+        return await browserEvaluateTool((args || { function: '' }) as unknown as BrowserEvaluateArgs);
 
       case "browser-tabs":
         return await browserTabsTool(args);
 
       case "browser-console":
-        return await browserConsoleTool(args);
+        return await browserConsoleTool((args || { action: 'list' }) as unknown as BrowserConsoleArgs);
 
       case "browser-click":
-        return await browserClickTool(args);
+        return await browserClickTool((args || { selector: 'body' }) as unknown as BrowserClickArgs);
 
       case "browser-type":
-        return await browserTypeTool(args);
+        return await browserTypeTool((args || { selector: '', text: '' }) as unknown as BrowserTypeArgs);
 
       case "browser-press":
-        return await browserPressTool(args);
+        return await browserPressTool((args || { key: '' }) as unknown as BrowserPressArgs);
 
       case "browser-performance":
         return await browserPerformanceTool(args);
 
       case "browser-network":
-        return await browserNetworkTool(args);
+        return await browserNetworkTool((args || { action: 'monitor' }) as unknown as BrowserNetworkArgs);
 
       case "browser-pdf":
         return await browserPdfTool(args);
 
       case "browser-emulate":
-        return await browserEmulateTool(args);
+        return await browserEmulateTool((args || { action: 'viewport' }) as unknown as BrowserEmulateArgs);
 
       case "browser-storage":
         return await browserStorageTool(args);
@@ -369,21 +375,21 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 });
 
 // Start server
-async function main() {
+async function main(): Promise<void> {
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error("FRIDAY MCP Server running on stdio");
 
   // Cleanup on exit
-  process.on("SIGINT", async () => {
+  process.on("SIGINT", () => {
     console.error("\nShutting down FRIDAY MCP Server...");
-    await cleanupBrowserManager();
+    void cleanupBrowserManager();
     process.exit(0);
   });
 
-  process.on("SIGTERM", async () => {
+  process.on("SIGTERM", () => {
     console.error("\nShutting down FRIDAY MCP Server...");
-    await cleanupBrowserManager();
+    void cleanupBrowserManager();
     process.exit(0);
   });
 }
