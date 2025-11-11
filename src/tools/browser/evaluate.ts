@@ -19,11 +19,10 @@ export async function browserEvaluateTool(args: BrowserEvaluateArgs): Promise<MC
     const page = browser.getCurrentPage();
 
     // Create function from string
-    // eslint-disable-next-line @typescript-eslint/no-implied-eval, @typescript-eslint/no-unsafe-assignment
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval
     const evalFunction = new Function("return " + functionString)() as (...args: unknown[]) => unknown;
 
     // Execute in page context
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-assignment
     const result = await page.evaluate(evalFunction, ...functionArgs);
 
     // Format result for display

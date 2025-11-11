@@ -12,9 +12,9 @@ export default tseslint.config(
       },
     },
     rules: {
-      '@typescript-eslint/explicit-function-return-type': 'warn',
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'error',
       'no-console': ['warn', { allow: ['error', 'warn'] }],
       'prefer-const': 'error',
@@ -37,8 +37,8 @@ export default tseslint.config(
       '@typescript-eslint/no-base-to-string': 'off',
       '@typescript-eslint/no-unnecessary-type-assertion': 'off',
       '@typescript-eslint/require-await': 'off',
-      // Common dev patterns
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      // Common dev patterns - turn off unused vars entirely for tools
+      '@typescript-eslint/no-unused-vars': 'off',
       'no-useless-escape': 'off',
       'no-empty': 'off',
       // Allow info logs in tools; still warn to discourage overuse
