@@ -246,8 +246,8 @@ export class ProjectAnalyzer {
   private async analyzeConventions(): Promise<ProjectAnalysis["conventions"]> {
     let naming = "camelCase"; // default
     let fileStructure = "type-based";
-    let imports = "relative";
-    let exports = "named";
+    const imports = "relative";
+    const exports = "named";
 
     // Check ESLint config for naming conventions
     try {
@@ -416,14 +416,126 @@ export class ProjectAnalyzer {
     }
   }
 
+  /**
+   * Check if files matching the pattern exist in the project
+   * @param pattern - File pattern (e.g., "*.js", "*.ts", "*.py")
+   */
   private async hasFiles(pattern: string): Promise<boolean> {
-    // Simple check - in real implementation, use glob
-    return false;
+    try {
+      // Convert glob pattern to regex
+      const regexPattern = pattern
+        .replace(/\*\*/g, ".*") // ** matches any directory
+        .replace(/\*/g, "[^/]*") // * matches any filename
+        .replace(/\./g, "\\."); // Escape dots
+      const regex = new RegExp(regexPattern + "$");
+
+      // Recursively search for matching files
+      const searchDir = async (dir: string): Promise<boolean> => {
+        try {
+          const entries = await fs.readdir(dir, { withFileTypes: true });
+          
+          for (const entry of entries) {
+            const fullPath = path.join(dir, entry.name);
+            const relativePath = path.relative(this.projectRoot, fullPath);
+            
+            // Skip node_modules, .git, dist, build, and other common ignore directories
+            if (
+              entry.name.startsWith(".") ||
+              entry.name === "node_modules" ||
+              entry.name === "dist" ||
+              entry.name === "build" ||
+              entry.name === ".next" ||
+              entry.name === ".git"
+            ) {
+              continue;
+            }
+
+            if (entry.isFile() && regex.test(relativePath)) {
+              return true;
+            }
+
+            if (entry.isDirectory()) {
+              const found = await searchDir(fullPath);
+              if (found) return true;
+            }
+          }
+        } catch {
+          // Ignore permission errors or other issues
+        }
+        return false;
+      };
+
+      return await searchDir(this.projectRoot);
+    } catch {
+      return false;
+    }
   }
 
+  /**
+   * Check if a pattern exists in code files
+   * @param pattern - Pattern to search for (regex string)
+   */
   private async hasPattern(pattern: string): Promise<boolean> {
-    // Simple check - in real implementation, search files
-    return false;
+    try {
+      const regex = new RegExp(pattern, "i"); // Case-insensitive search
+      const codeExtensions = [".ts", ".tsx", ".js", ".jsx", ".py", ".java", ".go", ".rs"];
+      let filesChecked = 0;
+      const maxFilesToCheck = 50; // Limit search for performance
+
+      // Recursively search for pattern in code files
+      const searchInFiles = async (dir: string): Promise<boolean> => {
+        try {
+          const entries = await fs.readdir(dir, { withFileTypes: true });
+          
+          for (const entry of entries) {
+            if (filesChecked >= maxFilesToCheck) {
+              break; // Stop if we've checked enough files
+            }
+
+            const fullPath = path.join(dir, entry.name);
+            
+            // Skip node_modules, .git, dist, build, and other common ignore directories
+            if (
+              entry.name.startsWith(".") ||
+              entry.name === "node_modules" ||
+              entry.name === "dist" ||
+              entry.name === "build" ||
+              entry.name === ".next" ||
+              entry.name === ".git"
+            ) {
+              continue;
+            }
+
+            if (entry.isFile()) {
+              const ext = path.extname(entry.name);
+              if (codeExtensions.includes(ext)) {
+                try {
+                  const content = await fs.readFile(fullPath, "utf-8");
+                  if (regex.test(content)) {
+                    return true;
+                  }
+                  filesChecked++;
+                } catch {
+                  // Ignore read errors (binary files, etc.)
+                }
+              }
+            }
+
+            if (entry.isDirectory()) {
+              const found = await searchInFiles(fullPath);
+              if (found) return true;
+            }
+          }
+        } catch {
+          // Ignore permission errors or other issues
+        }
+        return false;
+      };
+
+      return await searchInFiles(this.projectRoot);
+    } catch {
+      return false;
+    }
   }
 
   private async readJson(filePath: string): Promise<any> {

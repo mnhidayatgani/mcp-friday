@@ -4,6 +4,7 @@
  */
 
 import { getBrowserManager } from "../../browser/index.js";
+import type { MCPToolResult } from "../../types/mcp-tool.js";
 
 export interface BrowserNetworkArgs {
   action: "throttle" | "block" | "monitor";
@@ -11,7 +12,7 @@ export interface BrowserNetworkArgs {
   blockedUrls?: string[];
 }
 
-export async function browserNetworkTool(args: BrowserNetworkArgs) {
+export async function browserNetworkTool(args: BrowserNetworkArgs): Promise<MCPToolResult> {
   const { action, throttleType = "None", blockedUrls = [] } = args;
 
   try {
@@ -105,8 +106,9 @@ export async function browserNetworkTool(args: BrowserNetworkArgs) {
       }
 
       default: {
-        const unknownAction: never = action;
-        throw new Error(`Unknown action: ${unknownAction}`);
+        // TypeScript exhaustive check
+        const _exhaustive: never = action;
+        throw new Error(`Unknown action: ${String(_exhaustive)}`);
       }
     }
   } catch (error) {

@@ -1,9 +1,9 @@
 # Project Current State
 
-**Project:** friday-mcp-server  
+**Project:** @mnhidayatgani/friday-mcp  
 **Type:** unknown  
 **Status:** Initial Setup  
-**Last Updated:** 2025-11-08T14:40:59.037Z
+**Last Updated:** 2025-11-11T20:43:17.088Z
 
 ---
 

@@ -4,6 +4,7 @@
  */
 
 import { getBrowserManager } from "../../browser/index.js";
+import type { MCPToolResult } from "../../types/mcp-tool.js";
 import path from "path";
 
 export interface BrowserPdfArgs {
@@ -13,7 +14,7 @@ export interface BrowserPdfArgs {
   printBackground?: boolean;
 }
 
-export async function browserPdfTool(args: any) {
+export async function browserPdfTool(args: BrowserPdfArgs): Promise<MCPToolResult> {
   const {
     filePath = `./page-${Date.now()}.pdf`,
     format = "A4",

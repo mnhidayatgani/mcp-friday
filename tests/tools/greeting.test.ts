@@ -29,7 +29,10 @@ describe("Greeting Tool", () => {
     const result = await greetingTool();
 
     expect(result.content[0]).toHaveProperty("text");
-    expect(result.content[0].text).toContain("FRIDAY");
+    expect(result.content[0].type).toBe("text");
+    if (result.content[0].type === "text") {
+      expect(result.content[0].text).toContain("FRIDAY");
+    }
   });
 
   it("should include time-based greeting", async () => {
@@ -37,14 +40,16 @@ describe("Greeting Tool", () => {
     (fs.readdir as jest.Mock).mockResolvedValue([]);
 
     const result = await greetingTool();
-    const text = result.content[0].text;
+    expect(result.content[0].type).toBe("text");
+    if (result.content[0].type === "text") {
+      const text = result.content[0].text;
+      const hasGreeting = 
+        text.includes("Good morning") ||
+        text.includes("Good afternoon") ||
+        text.includes("Good evening");
 
-    const hasGreeting = 
-      text.includes("Good morning") ||
-      text.includes("Good afternoon") ||
-      text.includes("Good evening");
-
-    expect(hasGreeting).toBe(true);
+      expect(hasGreeting).toBe(true);
+    }
   });
 
   it("should include project status", async () => {
@@ -52,8 +57,10 @@ describe("Greeting Tool", () => {
     (fs.readdir as jest.Mock).mockResolvedValue(["impl1.md", "impl2.md"]);
 
     const result = await greetingTool();
-
-    expect(result.content[0].text).toContain("Project Status");
+    expect(result.content[0].type).toBe("text");
+    if (result.content[0].type === "text") {
+      expect(result.content[0].text).toContain("Project Status");
+    }
   });
 
   it("should handle missing memory files", async () => {
@@ -63,7 +70,10 @@ describe("Greeting Tool", () => {
     const result = await greetingTool();
 
     expect(result).toHaveProperty("content");
-    expect(result.content[0].text).toBeTruthy();
+    expect(result.content[0].type).toBe("text");
+    if (result.content[0].type === "text") {
+      expect(result.content[0].text).toBeTruthy();
+    }
   });
 
   it("should include recommendations", async () => {
@@ -71,8 +81,10 @@ describe("Greeting Tool", () => {
     (fs.readdir as jest.Mock).mockResolvedValue([]);
 
     const result = await greetingTool();
-
-    expect(result.content[0].text).toContain("Recommendations");
+    expect(result.content[0].type).toBe("text");
+    if (result.content[0].type === "text") {
+      expect(result.content[0].text).toContain("Recommendations");
+    }
   });
 
   it("should mention completed tasks", async () => {
@@ -83,8 +95,10 @@ describe("Greeting Tool", () => {
     ]);
 
     const result = await greetingTool();
-
-    expect(result.content[0].text).toContain("implementations");
+    expect(result.content[0].type).toBe("text");
+    if (result.content[0].type === "text") {
+      expect(result.content[0].text).toContain("implementations");
+    }
   });
 
   it("should format output as text", async () => {

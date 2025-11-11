@@ -5,6 +5,7 @@
 
 import { promises as fs } from "fs";
 import path from "path";
+import type { MCPToolResult } from "../types/mcp-tool.js";
 
 interface ProjectStatus {
   currentPhase: string;
@@ -13,7 +14,7 @@ interface ProjectStatus {
   recommendations: string[];
 }
 
-export async function greetingTool(): Promise<any> {
+export async function greetingTool(): Promise<MCPToolResult> {
   const projectRoot = process.cwd();
   const status = await analyzeProjectStatus(projectRoot);
 

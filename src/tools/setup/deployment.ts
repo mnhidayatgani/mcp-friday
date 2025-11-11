@@ -5,13 +5,18 @@
 
 import { promises as fs } from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 
 /**
  * Deploy copilot instructions to user's project
  */
 export async function deployCopilotInstructions(projectRoot: string): Promise<void> {
   const targetPath = path.join(projectRoot, ".github", "copilot-instructions.md");
-  const templatePath = path.join(__dirname, "../../../.github/COPILOT-INSTRUCTIONS-TEMPLATE.md");
+  
+  // Get current file directory in ES module compatible way
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const templatePath = path.join(__dirname, "../../../docs/github/5.2-COPILOT-INSTRUCTIONS-TEMPLATE.md");
 
   try {
     // Check if user already has copilot-instructions.md

@@ -11,33 +11,39 @@ FRIDAY MCP now includes enterprise-grade CI/CD and code review automation for bo
 #### 1. CI/CD Pipeline (`ci-cd.yml`)
 
 **Triggers:**
+
 - Push to `main` or `develop` branches
 - Pull requests to `main` or `develop`
 
 **Jobs:**
 
 **Lint Job:**
+
 - ESLint check
 - TypeScript compilation (`tsc --noEmit`)
 - Code style verification
 
 **Test Job:**
+
 - Multi-version testing (Node 18 & 20)
 - Full test suite execution
 - Playwright browser tests
 - Coverage reporting to Codecov
 
 **Build Job:**
+
 - Dependency on lint & test
 - Build verification
 - Artifact validation
 
 **Security Job:**
+
 - NPM audit (high severity threshold)
 - Vulnerability scanning
 - Continuous security monitoring
 
 **Publish Job:** (main branch only)
+
 - Auto-detect version changes
 - Publish to NPM registry
 - Create GitHub releases
@@ -46,9 +52,11 @@ FRIDAY MCP now includes enterprise-grade CI/CD and code review automation for bo
 #### 2. Code Review Assistant (`code-review.yml`)
 
 **Triggers:**
+
 - Pull request opened/synchronized/reopened
 
 **Features:**
+
 - PR size analysis
 - File change warnings (>50 files)
 - TODO/FIXME detection
@@ -59,6 +67,7 @@ FRIDAY MCP now includes enterprise-grade CI/CD and code review automation for bo
 ### Quality Gates
 
 All PRs must pass:
+
 - ✅ Linting
 - ✅ All tests (378+ tests)
 - ✅ Build compilation
@@ -68,6 +77,7 @@ All PRs must pass:
 ### Auto-Labeling
 
 **Type Labels:**
+
 - `type: documentation` - Markdown files, docs
 - `type: tests` - Test files
 - `type: build` - Package.json, configs
@@ -76,6 +86,7 @@ All PRs must pass:
 - `type: fix` - Bug fixes
 
 **Size Labels:**
+
 - `size: small` - 1-5 files
 - `size: medium` - 6-20 files
 - `size: large` - 21+ files
@@ -83,6 +94,7 @@ All PRs must pass:
 ### PR Template
 
 Comprehensive checklist including:
+
 - Type of change classification
 - Description and motivation
 - Testing verification
@@ -105,18 +117,21 @@ When users run `friday-setup`, Phase 8 automatically:
 ### User Benefits
 
 **Quality Assurance:**
+
 - Automated testing on every commit
 - Code style enforcement
 - Security vulnerability detection
 - Build verification
 
 **Developer Experience:**
+
 - Fast feedback (3-5 minutes)
 - Clear contribution guidelines
 - Automated PR reviews
 - Organized workflow
 
 **Deployment Safety:**
+
 - Multi-stage verification
 - Version management
 - Controlled releases
@@ -213,6 +228,7 @@ friday-setup
 ```
 
 Phase 8 will automatically:
+
 - ✅ Create GitHub Actions workflows
 - ✅ Configure CI/CD pipeline
 - ✅ Set up code review
@@ -265,18 +281,21 @@ npm audit --audit-level=critical
 ### For Contributors
 
 **Before PR:**
+
 - ✅ Run `npm test` locally
 - ✅ Run `npm run lint` locally
 - ✅ Review your own changes
 - ✅ Update documentation
 
 **PR Guidelines:**
+
 - Keep PRs small (<20 files when possible)
 - Write clear descriptions
 - Add tests for new features
 - Update docs for changes
 
 **After PR:**
+
 - ✅ Watch CI/CD pipeline
 - ✅ Address review comments
 - ✅ Keep PR up-to-date with main
@@ -284,6 +303,7 @@ npm audit --audit-level=critical
 ### For Maintainers
 
 **Review Process:**
+
 - Check automated review summary
 - Verify tests pass
 - Review code changes
@@ -291,6 +311,7 @@ npm audit --audit-level=critical
 - Approve and merge
 
 **Release Process:**
+
 - Version bump (`npm version minor/major/patch`)
 - Push to main
 - CI/CD auto-publishes
@@ -301,6 +322,7 @@ npm audit --audit-level=critical
 ### GitHub Actions Tab
 
 View all workflows:
+
 ```
 https://github.com/mnhidayatgani/mcp-friday/actions
 ```
@@ -308,6 +330,7 @@ https://github.com/mnhidayatgani/mcp-friday/actions
 ### Status Badges
 
 Add to README:
+
 ```markdown
 ![CI/CD](https://github.com/mnhidayatgani/mcp-friday/workflows/CI%2FCD%20Pipeline/badge.svg)
 ![Tests](https://github.com/mnhidayatgani/mcp-friday/workflows/Tests/badge.svg)
@@ -316,6 +339,7 @@ Add to README:
 ### NPM Status
 
 Check package:
+
 ```
 https://www.npmjs.com/package/@mnhidayatgani/friday-mcp
 ```
@@ -325,16 +349,19 @@ https://www.npmjs.com/package/@mnhidayatgani/friday-mcp
 ### CI/CD Fails
 
 **Lint Errors:**
+
 ```bash
 npm run lint --fix
 ```
 
 **Test Failures:**
+
 ```bash
 npm test -- --verbose
 ```
 
 **Build Issues:**
+
 ```bash
 npm run build
 # Check TypeScript errors
@@ -380,6 +407,7 @@ jobs:
 ### Secrets Management
 
 Add secrets in GitHub:
+
 - Settings → Secrets and variables → Actions
 - Add `NPM_TOKEN` for publishing
 - Add other API keys as needed
@@ -387,6 +415,7 @@ Add secrets in GitHub:
 ### Branch Protection
 
 Recommended settings:
+
 - ✅ Require PR reviews
 - ✅ Require status checks
 - ✅ Require branches up-to-date
@@ -405,6 +434,7 @@ Recommended settings:
 ### For Users
 
 After `friday-setup`:
+
 - **Workflows Created:** 2
 - **PR Template:** 1
 - **Auto-Labeler:** Configured

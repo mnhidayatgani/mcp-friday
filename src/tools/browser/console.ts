@@ -3,13 +3,14 @@
  */
 
 import { getBrowserManager } from "../../browser/index.js";
+import type { MCPToolResult } from "../../types/mcp-tool.js";
 
 export interface BrowserConsoleArgs {
   action: "list" | "clear";
   onlyErrors?: boolean;
 }
 
-export async function browserConsoleTool(args: BrowserConsoleArgs) {
+export async function browserConsoleTool(args: BrowserConsoleArgs): Promise<MCPToolResult> {
   const { action, onlyErrors = false } = args;
 
   try {
@@ -72,8 +73,9 @@ export async function browserConsoleTool(args: BrowserConsoleArgs) {
       }
 
       default: {
-        const unknownAction: never = action;
-        throw new Error(`Unknown action: ${unknownAction}`);
+        // TypeScript exhaustive check
+        const _exhaustive: never = action;
+        throw new Error(`Unknown action: ${String(_exhaustive)}`);
       }
     }
   } catch (error) {

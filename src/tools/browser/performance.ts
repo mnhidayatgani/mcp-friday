@@ -4,12 +4,34 @@
  */
 
 import { getBrowserManager } from "../../browser/index.js";
+import type { MCPToolResult } from "../../types/mcp-tool.js";
 
 export interface BrowserPerformanceArgs {
   action: "start" | "stop" | "metrics";
 }
 
-export async function browserPerformanceTool(args: any) {
+interface PerformanceNavigationTiming {
+  entryType: string;
+  domContentLoadedEventEnd?: number;
+  domContentLoadedEventStart?: number;
+  loadEventEnd?: number;
+  loadEventStart?: number;
+}
+
+interface PerformancePaintTiming {
+  entryType: string;
+  name: string;
+  startTime?: number;
+}
+
+interface PerformanceMetrics {
+  domContentLoaded: number;
+  load: number;
+  firstPaint: number;
+  firstContentfulPaint: number;
+}
+
+export async function browserPerformanceTool(args: BrowserPerformanceArgs): Promise<MCPToolResult> {
   const { action } = args as BrowserPerformanceArgs;
 
   try {
@@ -51,16 +73,35 @@ export async function browserPerformanceTool(args: any) {
 
       case "metrics": {
         // Get performance metrics
-        const metrics = await page.evaluate(() => {
-          const perfEntries = performance.getEntries();
-          const navigation: any = perfEntries.find((e: any) => e.entryType === "navigation");
-          const paints: any[] = perfEntries.filter((e: any) => e.entryType === "paint");
+        const metrics = await page.evaluate((): PerformanceMetrics => {
+          const perfEntries = performance.getEntries() as Array<PerformanceNavigationTiming | PerformancePaintTiming>;
+          const navigation = perfEntries.find(
+            (e): e is PerformanceNavigationTiming => e.entryType === "navigation"
+          );
+          const paints = perfEntries.filter(
+            (e): e is PerformancePaintTiming => e.entryType === "paint"
+          );
+
+          const domContentLoaded = navigation && 
+            navigation.domContentLoadedEventEnd !== undefined && 
+            navigation.domContentLoadedEventStart !== undefined
+            ? navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart
+            : 0;
+
+          const load = navigation && 
+            navigation.loadEventEnd !== undefined && 
+            navigation.loadEventStart !== undefined
+            ? navigation.loadEventEnd - navigation.loadEventStart
+            : 0;
+
+          const firstPaint = paints.find((p) => p.name === "first-paint")?.startTime ?? 0;
+          const firstContentfulPaint = paints.find((p) => p.name === "first-contentful-paint")?.startTime ?? 0;
 
           return {
-            domContentLoaded: navigation?.domContentLoadedEventEnd - navigation?.domContentLoadedEventStart || 0,
-            load: navigation?.loadEventEnd - navigation?.loadEventStart || 0,
-            firstPaint: paints.find((p: any) => p.name === "first-paint")?.startTime || 0,
-            firstContentfulPaint: paints.find((p: any) => p.name === "first-contentful-paint")?.startTime || 0,
+            domContentLoaded,
+            load,
+            firstPaint,
+            firstContentfulPaint,
           };
         });
 
@@ -68,7 +109,7 @@ export async function browserPerformanceTool(args: any) {
           content: [
             {
               type: "text",
-              text: `📊 Performance Metrics\n\nDOM Content Loaded: ${metrics.domContentLoaded?.toFixed(2)}ms\nLoad Event: ${metrics.load?.toFixed(2)}ms\nFirst Paint: ${metrics.firstPaint?.toFixed(2)}ms\nFirst Contentful Paint: ${metrics.firstContentfulPaint?.toFixed(2)}ms`,
+              text: `📊 Performance Metrics\n\nDOM Content Loaded: ${metrics.domContentLoaded.toFixed(2)}ms\nLoad Event: ${metrics.load.toFixed(2)}ms\nFirst Paint: ${metrics.firstPaint.toFixed(2)}ms\nFirst Contentful Paint: ${metrics.firstContentfulPaint.toFixed(2)}ms`,
             },
           ],
         };

@@ -4,6 +4,7 @@
  */
 
 import { getBrowserManager } from "../../browser/index.js";
+import type { MCPToolResult } from "../../types/mcp-tool.js";
 
 export interface BrowserClickArgs {
   selector: string;
@@ -11,7 +12,7 @@ export interface BrowserClickArgs {
   clickCount?: number;
 }
 
-export async function browserClickTool(args: BrowserClickArgs) {
+export async function browserClickTool(args: BrowserClickArgs): Promise<MCPToolResult> {
   const { selector, button = "left", clickCount = 1 } = args;
 
   try {
@@ -48,7 +49,7 @@ export interface BrowserTypeArgs {
   delay?: number;
 }
 
-export async function browserTypeTool(args: BrowserTypeArgs) {
+export async function browserTypeTool(args: BrowserTypeArgs): Promise<MCPToolResult> {
   const { selector, text, delay = 0 } = args;
 
   try {
@@ -84,7 +85,7 @@ export interface BrowserPressArgs {
   key: string;
 }
 
-export async function browserPressTool(args: BrowserPressArgs) {
+export async function browserPressTool(args: BrowserPressArgs): Promise<MCPToolResult> {
   const { key } = args;
 
   try {

@@ -3,13 +3,14 @@
  */
 
 import { getBrowserManager } from "../../browser/index.js";
+import type { MCPToolResult } from "../../types/mcp-tool.js";
 
 export interface BrowserTabsArgs {
   action: "list" | "create" | "select" | "close";
   index?: number;
 }
 
-export async function browserTabsTool(args: any) {
+export async function browserTabsTool(args: BrowserTabsArgs): Promise<MCPToolResult> {
   const { action, index } = args as BrowserTabsArgs;
 
   try {

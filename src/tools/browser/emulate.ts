@@ -4,6 +4,7 @@
  */
 
 import { getBrowserManager } from "../../browser/index.js";
+import type { MCPToolResult } from "../../types/mcp-tool.js";
 
 export interface BrowserEmulateArgs {
   action: "device" | "geolocation" | "timezone" | "viewport";
@@ -15,7 +16,7 @@ export interface BrowserEmulateArgs {
   height?: number;
 }
 
-export async function browserEmulateTool(args: BrowserEmulateArgs) {
+export async function browserEmulateTool(args: BrowserEmulateArgs): Promise<MCPToolResult> {
   const { action, device, latitude, longitude, timezone, width, height } = args;
 
   try {
@@ -130,8 +131,9 @@ export async function browserEmulateTool(args: BrowserEmulateArgs) {
       }
 
       default: {
-        const unknownAction: never = action;
-        throw new Error(`Unknown action: ${unknownAction}`);
+        // TypeScript exhaustive check
+        const _exhaustive: never = action;
+        throw new Error(`Unknown action: ${String(_exhaustive)}`);
       }
     }
   } catch (error) {

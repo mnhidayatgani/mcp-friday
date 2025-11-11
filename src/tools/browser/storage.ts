@@ -4,6 +4,7 @@
  */
 
 import { getBrowserManager } from "../../browser/index.js";
+import type { MCPToolResult } from "../../types/mcp-tool.js";
 
 export interface BrowserStorageArgs {
   action: "get-cookies" | "set-cookie" | "clear-cookies" | "local-storage" | "session-storage";
@@ -14,7 +15,7 @@ export interface BrowserStorageArgs {
   key?: string;
 }
 
-export async function browserStorageTool(args: any) {
+export async function browserStorageTool(args: BrowserStorageArgs): Promise<MCPToolResult> {
   const { action, name, value, domain, path = "/", key } = args as BrowserStorageArgs;
 
   try {

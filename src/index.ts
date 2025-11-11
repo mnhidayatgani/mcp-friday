@@ -40,6 +40,11 @@ import type { BrowserConsoleArgs } from "./tools/browser/console.js";
 import type { BrowserClickArgs, BrowserTypeArgs, BrowserPressArgs } from "./tools/browser/interact.js";
 import type { BrowserNetworkArgs } from "./tools/browser/network.js";
 import type { BrowserEmulateArgs } from "./tools/browser/emulate.js";
+import type { BrowserPdfArgs } from "./tools/browser/pdf.js";
+import type { BrowserStorageArgs } from "./tools/browser/storage.js";
+import type { BrowserPerformanceArgs } from "./tools/browser/performance.js";
+import type { BrowserTabsArgs } from "./tools/browser/tabs.js";
+import type { BrowserScreenshotArgs } from "./tools/browser/screenshot.js";
 import { cleanupBrowserManager } from "./browser/index.js";
 
 const server = new Server(
@@ -325,13 +330,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return await browserNavigateTool((args || {}) as unknown as BrowserNavigateArgs);
 
       case "browser-screenshot":
-        return await browserScreenshotTool(args);
+        return await browserScreenshotTool((args || {}) as unknown as BrowserScreenshotArgs);
 
       case "browser-evaluate":
         return await browserEvaluateTool((args || { function: '' }) as unknown as BrowserEvaluateArgs);
 
       case "browser-tabs":
-        return await browserTabsTool(args);
+        return await browserTabsTool((args || { action: 'list' }) as unknown as BrowserTabsArgs);
 
       case "browser-console":
         return await browserConsoleTool((args || { action: 'list' }) as unknown as BrowserConsoleArgs);
@@ -346,19 +351,19 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return await browserPressTool((args || { key: '' }) as unknown as BrowserPressArgs);
 
       case "browser-performance":
-        return await browserPerformanceTool(args);
+        return await browserPerformanceTool((args || { action: 'metrics' }) as unknown as BrowserPerformanceArgs);
 
       case "browser-network":
         return await browserNetworkTool((args || { action: 'monitor' }) as unknown as BrowserNetworkArgs);
 
       case "browser-pdf":
-        return await browserPdfTool(args);
+        return await browserPdfTool((args || {}) as BrowserPdfArgs);
 
       case "browser-emulate":
         return await browserEmulateTool((args || { action: 'viewport' }) as unknown as BrowserEmulateArgs);
 
       case "browser-storage":
-        return await browserStorageTool(args);
+        return await browserStorageTool((args || { action: 'get-cookies' }) as unknown as BrowserStorageArgs);
 
       default:
         throw new Error(`Unknown tool: ${name}`);

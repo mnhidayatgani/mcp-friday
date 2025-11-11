@@ -4,6 +4,7 @@
 
 import { getBrowserManager } from "../../browser/index.js";
 import type { NavigationAction, WaitUntil } from "../../browser/types.js";
+import type { MCPToolResult } from "../../types/mcp-tool.js";
 
 export interface BrowserNavigateArgs {
   url?: string;
@@ -12,7 +13,7 @@ export interface BrowserNavigateArgs {
   waitUntil?: WaitUntil;
 }
 
-export async function browserNavigateTool(args: BrowserNavigateArgs) {
+export async function browserNavigateTool(args: BrowserNavigateArgs): Promise<MCPToolResult> {
   const {
     url,
     action,

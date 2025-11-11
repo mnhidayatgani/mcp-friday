@@ -59,7 +59,10 @@ export class UpstashMemory {
 
     if (!data) return null;
 
-    return typeof data === "string" ? JSON.parse(data) : data;
+    if (typeof data === "string") {
+      return JSON.parse(data) as SessionContext;
+    }
+    return data as SessionContext;
   }
 
   /**
@@ -148,7 +151,10 @@ export class UpstashMemory {
 
     if (!data) return null;
 
-    return typeof data === "string" ? JSON.parse(data) : data;
+    if (typeof data === "string") {
+      return JSON.parse(data) as Record<string, unknown>;
+    }
+    return data as Record<string, unknown>;
   }
 
   /**
@@ -168,7 +174,10 @@ export class UpstashMemory {
 
     if (!data) return null;
 
-    return typeof data === "string" ? JSON.parse(data) : data;
+    if (typeof data === "string") {
+      return JSON.parse(data) as Record<string, unknown>;
+    }
+    return data as Record<string, unknown>;
   }
 
   /**
