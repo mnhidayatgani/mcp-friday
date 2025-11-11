@@ -7,38 +7,48 @@ FRIDAY can automatically detect, migrate, and take over memory management from o
 ## Supported Extensions
 
 ### 1. **Cursor Memory**
+
 - **Files detected:** `.cursor/memory`, `.cursor/context`, `.cursorrules`
 - **Data migrated:** Context files, memory snapshots, configuration
 
 ### 2. **Continue**
+
 - **Files detected:** `.continue`, `.continuerc.json`
 - **Data migrated:** AI context, conversation history
 
 ### 3. **Aider**
+
 - **Files detected:** `.aider`, `.aider.chat.history.md`
 - **Data migrated:** Chat history, pair programming sessions
 
 ### 4. **Other AI Extensions**
+
 - **Files detected:** `.ai-memory`, `.codeium/context`, `.copilot-context`, `.github/ai-context`
 - **Data migrated:** Various AI memory and context files
 
 ## How It Works
 
 ### Step 1: Detection
+
 When you run `friday-setup`, FRIDAY automatically:
+
 1. Scans your project for known AI extension memory files
 2. Identifies the type and size of stored data
 3. Reports findings before migration
 
 ### Step 2: Migration
+
 FRIDAY then:
+
 1. Reads all data from detected extensions
 2. Creates timestamped backup copies in `.github/memory/migrations/`
 3. Preserves original content with metadata
 4. Maintains full traceability
 
 ### Step 3: Takeover
+
 After migration:
+
 1. FRIDAY becomes the primary memory manager
 2. All memory functions route through FRIDAY
 3. Hybrid memory system (Git + Redis) activated
@@ -96,9 +106,10 @@ Each migrated file is stored with full metadata:
 **Size:** 24.5 KB
 
 ## Original Content
-
 ```
+
 [Original file content preserved here]
+
 ```
 
 ---
@@ -110,18 +121,21 @@ Original file can be safely removed.
 ## Safety Features
 
 ### Data Preservation
+
 - ✅ All original content preserved
 - ✅ Timestamped backups created
 - ✅ Source file path recorded
 - ✅ No destructive operations on source files
 
 ### Error Handling
+
 - ✅ Graceful handling of permission errors
 - ✅ Continues migration even if some files fail
 - ✅ Detailed error reporting
 - ✅ Rollback capability
 
 ### User Control
+
 - ✅ User must manually remove original files
 - ✅ Clear instructions provided
 - ✅ Verification step included
@@ -130,16 +144,19 @@ Original file can be safely removed.
 ## Benefits
 
 ### Consolidation
+
 - **Single memory system** for all AI interactions
 - **Unified context** across different tools
 - **Consistent format** for all memories
 
 ### Performance
+
 - **Hybrid storage** (Git + Redis)
 - **Fast retrieval** with Redis caching
 - **Persistent storage** with Git
 
 ### Organization
+
 - **Structured directories** (.github/memory/)
 - **Categorized storage** (implementations, decisions, issues)
 - **Easy navigation** and search
@@ -147,11 +164,13 @@ Original file can be safely removed.
 ## Usage
 
 Simply run:
+
 ```bash
 friday-setup
 ```
 
 FRIDAY will automatically:
+
 1. Detect all memory extensions
 2. Migrate their data
 3. Provide removal instructions
@@ -162,12 +181,14 @@ No additional configuration needed!
 ## Technical Details
 
 ### File Detection
+
 - Scans for known patterns
 - Checks both files and directories
 - Filters text-based content only
 - Respects .gitignore patterns
 
 ### Migration Process
+
 1. **Scan:** Identify extension files
 2. **Read:** Extract content safely
 3. **Transform:** Add metadata wrapper
@@ -175,7 +196,9 @@ No additional configuration needed!
 5. **Report:** Generate removal instructions
 
 ### Storage Location
+
 All migrated data goes to:
+
 ```
 .github/memory/migrations/
 ├── 2025-11-11-cursor-memory-context.md

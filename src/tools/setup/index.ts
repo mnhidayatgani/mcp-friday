@@ -14,6 +14,7 @@ import { ConflictResolver } from "./conflict-resolver.js";
 import { CopilotMerger } from "./copilot-merger.js";
 import { MemoryStats } from "./memory-stats.js";
 import { ExtensionMemoryMigrator } from "./extension-migrator.js";
+import { GitHubOptimizer } from "./github-optimizer.js";
 
 export interface SetupArgs {
   projectType?: "web" | "api" | "cli" | "auto-detect";
@@ -82,22 +83,29 @@ export async function setupTool(args: any) {
     }
     output.push("");
 
-    // Step 1: Scan .github/ folder
-    output.push("🔍 Step 1: Scanning .github/ folder");
+    // Step 1: Optimize .github/ folder structure
+    output.push("🔧 Step 1: Optimizing .github/ folder");
+    const optimizer = new GitHubOptimizer(config.projectRoot);
+    const optimizationResult = await optimizer.optimize();
+    const optimizationReport = optimizer.generateReport(optimizationResult);
+    output.push(...optimizationReport);
+
+    // Step 2: Scan .github/ folder
+    output.push("🔍 Step 2: Scanning .github/ folder");
     const scanner = new GitHubScanner(config.projectRoot);
     const scanResult = await scanner.scan();
     output.push("");
 
-    // Step 2: Resolve conflicts
+    // Step 3: Resolve conflicts
     if (scanResult.conflicts.length > 0) {
-      output.push("⚙️  Step 2: Resolving conflicts");
+      output.push("⚙️  Step 3: Resolving conflicts");
       const resolver = new ConflictResolver(config.projectRoot);
       await resolver.resolveConflicts(scanResult.conflicts);
       output.push("");
     }
 
-    // Step 3: Merge/Create copilot-instructions.md
-    output.push("📝 Step 3: Configuring AI protocol");
+    // Step 4: Merge/Create copilot-instructions.md
+    output.push("📝 Step 4: Configuring AI protocol");
     const merger = new CopilotMerger(config.projectRoot);
     const existingInstructions = await scanner.readCopilotInstructions();
     await merger.merge(existingInstructions);
