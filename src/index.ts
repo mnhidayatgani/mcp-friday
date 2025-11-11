@@ -12,40 +12,42 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
-import { setupTool } from "./tools/setup/index.js";
-import { searchTool } from "./tools/search.js";
-import { syncTool } from "./tools/sync.js";
-import { contextTool } from "./tools/context.js";
-import { greetingTool } from "./tools/greeting.js";
-import { SmartSearchStrategy, formatSmartSearchResults } from "./tools/smart-search.js";
-import { ConfigLoader } from "./utils/config-loader.js";
+import { cleanupBrowserManager } from "./browser/index.js";
+import { errorHandler } from "./middleware/error-handler.js";
+import type { BrowserConsoleArgs } from "./tools/browser/console.js";
+import type { BrowserEmulateArgs } from "./tools/browser/emulate.js";
+import type { BrowserEvaluateArgs } from "./tools/browser/evaluate.js";
 import {
-  browserNavigateTool,
-  browserScreenshotTool,
-  browserEvaluateTool,
-  browserTabsTool,
-  browserConsoleTool,
   browserClickTool,
-  browserTypeTool,
-  browserPressTool,
-  browserPerformanceTool,
+  browserConsoleTool,
+  browserEmulateTool,
+  browserEvaluateTool,
+  browserNavigateTool,
   browserNetworkTool,
   browserPdfTool,
-  browserEmulateTool,
+  browserPerformanceTool,
+  browserPressTool,
+  browserScreenshotTool,
   browserStorageTool,
+  browserTabsTool,
+  browserTypeTool,
 } from "./tools/browser/index.js";
+import type { BrowserClickArgs, BrowserPressArgs, BrowserTypeArgs } from "./tools/browser/interact.js";
 import type { BrowserNavigateArgs } from "./tools/browser/navigate.js";
-import type { BrowserEvaluateArgs } from "./tools/browser/evaluate.js";
-import type { BrowserConsoleArgs } from "./tools/browser/console.js";
-import type { BrowserClickArgs, BrowserTypeArgs, BrowserPressArgs } from "./tools/browser/interact.js";
 import type { BrowserNetworkArgs } from "./tools/browser/network.js";
-import type { BrowserEmulateArgs } from "./tools/browser/emulate.js";
 import type { BrowserPdfArgs } from "./tools/browser/pdf.js";
-import type { BrowserStorageArgs } from "./tools/browser/storage.js";
 import type { BrowserPerformanceArgs } from "./tools/browser/performance.js";
-import type { BrowserTabsArgs } from "./tools/browser/tabs.js";
 import type { BrowserScreenshotArgs } from "./tools/browser/screenshot.js";
-import { cleanupBrowserManager } from "./browser/index.js";
+import type { BrowserStorageArgs } from "./tools/browser/storage.js";
+import type { BrowserTabsArgs } from "./tools/browser/tabs.js";
+import { contextTool } from "./tools/context.js";
+import { greetingTool } from "./tools/greeting.js";
+import { healthCheckTool } from "./tools/health.js";
+import { searchTool } from "./tools/search.js";
+import { setupTool } from "./tools/setup/index.js";
+import { SmartSearchStrategy, formatSmartSearchResults } from "./tools/smart-search.js";
+import { syncTool } from "./tools/sync.js";
+import { ConfigLoader } from "./utils/config-loader.js";
 
 const server = new Server(
   {
@@ -99,6 +101,11 @@ const server = new Server(
         {
           name: "friday-greeting",
           description: "Greet FRIDAY and get project status",
+          inputSchema: { type: "object", properties: {} },
+        },
+        {
+          name: "friday-health",
+          description: "Check FRIDAY system health (Redis, Git, Memory, Browser, Cache)",
           inputSchema: { type: "object", properties: {} },
         },
         {
@@ -310,6 +317,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case "friday-greeting":
         return await greetingTool();
 
+      case "friday-health":
+        return await healthCheckTool();
+
       case "friday-smart-search": {
         const config = ConfigLoader.load();
         const smartSearch = new SmartSearchStrategy(config.projectRoot);
@@ -370,6 +380,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
+    
+    // Log error to handler
+    errorHandler.logError(name, error instanceof Error ? error : new Error(errorMessage));
+    
     return {
       content: [
         {

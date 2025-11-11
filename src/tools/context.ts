@@ -3,6 +3,7 @@
  * Load complete project context from hybrid memory
  */
 
+import { responseCache } from "../cache/response-cache.js";
 import { HybridMemoryManager } from "../memory/hybrid-manager.js";
 import { ConfigLoader } from "../utils/config-loader.js";
 
@@ -35,13 +36,31 @@ export async function contextTool(args: any) {
     }
 
     // Load INDEX
-    const index = await hybridMemory.readIndex();
+    const cacheKey = "friday:index";
+    let index = responseCache.get<string>(cacheKey);
+    
+    if (!index) {
+      index = await hybridMemory.readIndex();
+      if (index) {
+        responseCache.set(cacheKey, index);
+      }
+    }
+    
     if (index) {
       output.push("✅ INDEX.md loaded");
     }
 
     // Load current state
-    const state = await hybridMemory.readCurrentState();
+    const stateCacheKey = "friday:current-state";
+    let state = responseCache.get<string>(stateCacheKey);
+    
+    if (!state) {
+      state = await hybridMemory.readCurrentState();
+      if (state) {
+        responseCache.set(stateCacheKey, state);
+      }
+    }
+    
     if (state) {
       output.push("✅ current-state.md loaded");
       

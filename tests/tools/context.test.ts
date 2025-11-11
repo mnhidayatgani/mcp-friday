@@ -2,12 +2,19 @@
  * Context Tool Tests
  */
 
-import { contextTool } from "../../src/tools/context";
 import { HybridMemoryManager } from "../../src/memory/hybrid-manager";
+import { contextTool } from "../../src/tools/context";
 import { ConfigLoader } from "../../src/utils/config-loader";
 
 jest.mock("../../src/memory/hybrid-manager");
 jest.mock("../../src/utils/config-loader");
+jest.mock("../../src/cache/response-cache", () => ({
+  responseCache: {
+    get: jest.fn().mockReturnValue(null),
+    set: jest.fn(),
+    clear: jest.fn(),
+  },
+}));
 
 describe("Context Tool", () => {
   let mockHybridMemory: jest.Mocked<HybridMemoryManager>;
