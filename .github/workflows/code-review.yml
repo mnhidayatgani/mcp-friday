@@ -1,0 +1,72 @@
+name: Code Review Assistant
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  code-review:
+    name: Automated Code Review
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Check code complexity
+        run: |
+          npx complexity-report src/ --format json > complexity.json || true
+          cat complexity.json
+      
+      - name: Check file sizes
+        run: |
+          echo "## File Size Check" >> $GITHUB_STEP_SUMMARY
+          find src -type f -size +100k -exec ls -lh {} \; | awk '{print "⚠️ Large file: " $9 " (" $5 ")"}' >> $GITHUB_STEP_SUMMARY || echo "✅ No large files" >> $GITHUB_STEP_SUMMARY
+      
+      - name: Check test coverage
+        run: |
+          npm test -- --coverage --coverageReporters=text-summary || true
+      
+      - name: PR Size Check
+        run: |
+          CHANGES=$(git diff --stat origin/${{ github.base_ref }}...HEAD | tail -1)
+          echo "## PR Statistics" >> $GITHUB_STEP_SUMMARY
+          echo "$CHANGES" >> $GITHUB_STEP_SUMMARY
+          
+          FILES_CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | wc -l)
+          if [ $FILES_CHANGED -gt 50 ]; then
+            echo "⚠️ Large PR: $FILES_CHANGED files changed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ Reasonable PR size: $FILES_CHANGED files" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v3
+        with:
+          fail-on-severity: moderate
+
+  label-pr:
+    name: Auto Label PR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Label based on files
+        uses: actions/labeler@v4
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}

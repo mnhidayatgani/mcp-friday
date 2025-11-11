@@ -13,6 +13,7 @@ import { GitHubOptimizer } from "./github-optimizer.js";
 import { SetupOrchestrator, SetupPhase, PhaseResult } from "./orchestrator.js";
 import { ProjectLearner } from "./project-learner.js";
 import { MemoryStats } from "./memory-stats.js";
+import { CICDDeployer } from "./cicd-deployer.js";
 
 export async function setupToolV2(args: any) {
   const output: string[] = [];
@@ -300,6 +301,40 @@ export async function setupToolV2(args: any) {
             success: true,
             output: phaseOutput,
             errors: [],
+          };
+        } catch (error) {
+          return {
+            success: false,
+            output: phaseOutput,
+            errors: [error instanceof Error ? error.message : String(error)],
+          };
+        }
+      },
+    });
+
+    // Phase 8: CI/CD Deployment (Priority 8)
+    orchestrator.registerPhase({
+      name: "cicd-deployment",
+      description: "Deploy CI/CD pipeline and code review",
+      priority: 8,
+      dependencies: ["project-detection"],
+      execute: async (): Promise<PhaseResult> => {
+        const phaseOutput: string[] = [];
+        phaseOutput.push("🚀 Phase 8: CI/CD Deployment");
+        
+        try {
+          const project = orchestrator.getPhaseData("project-detection");
+          const deployer = new CICDDeployer(config.projectRoot, project?.type || "generic");
+          const result = await deployer.deploy();
+          const report = deployer.generateReport(result);
+          
+          phaseOutput.push(...report);
+          
+          return {
+            success: true,
+            output: phaseOutput,
+            errors: [],
+            data: result,
           };
         } catch (error) {
           return {

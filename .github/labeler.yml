@@ -1,0 +1,41 @@
+# Auto-labeling for PRs
+# Automatically adds labels based on changed files
+
+'type: documentation':
+  - '**/*.md'
+  - 'docs/**/*'
+
+'type: tests':
+  - 'tests/**/*'
+  - '**/*.test.ts'
+  - '**/*.spec.ts'
+
+'type: build':
+  - 'package.json'
+  - 'package-lock.json'
+  - 'tsconfig.json'
+  - 'jest.config.*'
+  - '.github/workflows/*'
+
+'type: feature':
+  - 'src/tools/**/*'
+  - 'src/browser/**/*'
+
+'type: memory':
+  - 'src/memory/**/*'
+  - 'src/tools/setup/**/*'
+
+'type: fix':
+  - 'src/**/*.ts'
+
+'size: small':
+  - any: ['**/*']
+    count: 1..5
+
+'size: medium':
+  - any: ['**/*']
+    count: 6..20
+
+'size: large':
+  - any: ['**/*']
+    count: 21..50
