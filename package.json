@@ -1,6 +1,6 @@
 {
   "name": "@mnhidayatgani/friday-mcp",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "FRIDAY AI Agent - MCP Server with Upstash integration and project intelligence",
   "type": "module",
   "main": "dist/index.js",
