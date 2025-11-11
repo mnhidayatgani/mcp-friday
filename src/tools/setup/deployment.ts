@@ -13,10 +13,37 @@ import { fileURLToPath } from "url";
 export async function deployCopilotInstructions(projectRoot: string): Promise<void> {
   const targetPath = path.join(projectRoot, ".github", "copilot-instructions.md");
   
-  // Get current file directory in ES module compatible way
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-  const templatePath = path.join(__dirname, "../../../docs/github/5.2-COPILOT-INSTRUCTIONS-TEMPLATE.md");
+  // Resolve template path in an ESM-safe way and provide a robust fallback if missing in the npm package
+  const thisFile = fileURLToPath(import.meta.url);
+  const thisDir = path.dirname(thisFile);
+  const templateUrl = new URL("../../../docs/github/5.2-COPILOT-INSTRUCTIONS-TEMPLATE.md", import.meta.url);
+  const templatePath = fileURLToPath(templateUrl);
+
+  // Minimal safe fallback content if template file is not packaged
+  const FALLBACK_TEMPLATE = `# GitHub Copilot Instructions - FRIDAY Protocol
+
+## 🤖 MANDATORY: Always Use FRIDAY Memory System
+
+Before doing anything in a project:
+1. Silent check for .github/memory/
+2. If missing, run: #friday-setup (no questions)
+3. If present, load: #friday-context
+4. Always search memory first: #friday-search "<topic>"
+
+## Response Style
+- Keep it short and actionable
+- Use level-2 headings for sections
+- When editing files, use the workspace tools; do not paste diffs
+
+## Quick Commands
+- #friday-setup — Initialize and optimize project (memory, CI/CD, AI protocol)
+- #friday-context — Load memory and conventions
+- #friday-search "<topic>" — Search existing memory
+- #friday-sync — Sync memory to Redis
+
+## ➕ User Custom Instructions (Optional)
+(You may add repository-specific rules below. This block is preserved across updates.)
+`;
 
   try {
     // Check if user already has copilot-instructions.md
@@ -39,8 +66,13 @@ export async function deployCopilotInstructions(projectRoot: string): Promise<vo
       // File doesn't exist yet
     }
 
-    // Read template
-    const template = await fs.readFile(templatePath, "utf-8");
+    // Read template (with fallback if not available in installed package)
+    let template: string;
+    try {
+      template = await fs.readFile(templatePath, "utf-8");
+    } catch {
+      template = FALLBACK_TEMPLATE;
+    }
 
     // If user has custom content, append it
     let finalContent = template;
