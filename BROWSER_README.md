@@ -4,7 +4,7 @@ Complete browser automation and DevTools access for FRIDAY MCP Server, powered b
 
 ## 🚀 Features
 
-### Core Browser Automation
+### Core Browser Automation (Phase 1)
 
 - **Navigation** - Navigate to URLs, use history (back/forward/reload)
 - **Screenshots** - Capture full page or viewport screenshots
@@ -13,7 +13,18 @@ Complete browser automation and DevTools access for FRIDAY MCP Server, powered b
 - **Console Access** - View and manage browser console messages
 - **Interactions** - Click, type, and press keys
 
-## 📚 Tools Available
+### DevTools Integration (Phase 2)
+
+- **Performance Tracing** - Start/stop tracing with Core Web Vitals
+- **Network Control** - Throttling, blocking, and monitoring
+
+### Advanced Features (Phase 3)
+
+- **PDF Generation** - Convert pages to PDF
+- **Device Emulation** - Emulate devices, geolocation, timezone
+- **Storage Management** - Cookies, localStorage, sessionStorage
+
+## 📚 All 13 Tools Available
 
 ### 1. `browser-navigate`
 
@@ -508,3 +519,99 @@ Part of FRIDAY MCP Server - MIT License
 **Status:** ✅ Phase 1 Complete  
 **Tests:** 31 browser tests passing  
 **Tools:** 8 browser automation tools
+
+---
+
+### 9. `browser-performance`
+Performance tracing and Core Web Vitals.
+
+\`\`\`json
+{
+  "name": "browser-performance",
+  "arguments": {
+    "action": "start"
+  }
+}
+\`\`\`
+
+**Parameters:**
+- \`action\` (string, required) - "start" | "stop" | "metrics"
+
+---
+
+### 10. `browser-network`
+Network throttling and control.
+
+\`\`\`json
+{
+  "name": "browser-network",
+  "arguments": {
+    "action": "throttle",
+    "throttleType": "Slow 3G"
+  }
+}
+\`\`\`
+
+**Parameters:**
+- \`action\` (string, required) - "throttle" | "block" | "monitor"
+- \`throttleType\` (string, optional) - Network speed profile
+- \`blockedUrls\` (array, optional) - URLs to block
+
+---
+
+### 11. `browser-pdf`
+Generate PDF from current page.
+
+\`\`\`json
+{
+  "name": "browser-pdf",
+  "arguments": {
+    "format": "A4"
+  }
+}
+\`\`\`
+
+**Parameters:**
+- \`filePath\` (string, optional) - Output file path
+- \`format\` (string, optional) - "A4" | "Letter" | "Legal"
+- \`landscape\` (boolean, optional) - Landscape mode
+
+---
+
+### 12. `browser-emulate`
+Device emulation and settings.
+
+\`\`\`json
+{
+  "name": "browser-emulate",
+  "arguments": {
+    "action": "device",
+    "device": "iPhone 13"
+  }
+}
+\`\`\`
+
+**Parameters:**
+- \`action\` (string, required) - "device" | "geolocation" | "timezone" | "viewport"
+- \`device\` (string, optional) - Device name
+- \`latitude/longitude\` (number, optional) - Geolocation
+
+---
+
+### 13. `browser-storage`
+Manage cookies and storage.
+
+\`\`\`json
+{
+  "name": "browser-storage",
+  "arguments": {
+    "action": "get-cookies"
+  }
+}
+\`\`\`
+
+**Parameters:**
+- \`action\` (string, required) - "get-cookies" | "set-cookie" | "clear-cookies" | "local-storage" | "session-storage"
+- \`key\` (string, optional) - Storage key
+- \`value\` (string, optional) - Storage value
+
