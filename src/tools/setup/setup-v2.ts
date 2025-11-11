@@ -4,16 +4,16 @@
  */
 
 import { HybridMemoryManager } from "../../memory/hybrid-manager.js";
-import { ProjectDetector } from "../../utils/project-detector.js";
 import { ConfigLoader } from "../../utils/config-loader.js";
+import { ProjectDetector } from "../../utils/project-detector.js";
 import { analyzeProject } from "./analysis.js";
+import { CICDDeployer } from "./cicd-deployer.js";
 import { deployCopilotInstructions } from "./deployment.js";
 import { ExtensionMemoryMigrator } from "./extension-migrator.js";
 import { GitHubOptimizer } from "./github-optimizer.js";
-import { SetupOrchestrator, SetupPhase, PhaseResult } from "./orchestrator.js";
-import { ProjectLearner } from "./project-learner.js";
 import { MemoryStats } from "./memory-stats.js";
-import { CICDDeployer } from "./cicd-deployer.js";
+import { PhaseResult, SetupOrchestrator } from "./orchestrator.js";
+import { ProjectLearner } from "./project-learner.js";
 
 export async function setupToolV2(args: any) {
   const output: string[] = [];
@@ -173,7 +173,7 @@ export async function setupToolV2(args: any) {
           }
           
           // Create/update index
-          const project = orchestrator.getPhaseData("project-detection");
+          const project = orchestrator.getPhaseData<{ name: string; type: string; techStack: string[] }>("project-detection");
           if (project) {
             await hybridMemory.createIndex({
               name: project.name,
@@ -214,8 +214,8 @@ export async function setupToolV2(args: any) {
         phaseOutput.push("🧠 Phase 5: Project Learning");
         
         try {
-          const memoryData = orchestrator.getPhaseData("memory-initialization");
-          const learner = new ProjectLearner(config.projectRoot, memoryData.hybridMemory);
+          const memoryData = orchestrator.getPhaseData<{ hybridMemory: HybridMemoryManager; isInitialized: boolean }>("memory-initialization");
+          const learner = new ProjectLearner(config.projectRoot, memoryData!.hybridMemory);
           const result = await learner.learn();
           const report = learner.generateReport(result);
           
@@ -278,8 +278,8 @@ export async function setupToolV2(args: any) {
         phaseOutput.push("🔌 Phase 7: Redis Health Check");
         
         try {
-          const memoryData = orchestrator.getPhaseData("memory-initialization");
-          const hybridMemory = memoryData.hybridMemory;
+          const memoryData = orchestrator.getPhaseData<{ hybridMemory: HybridMemoryManager; isInitialized: boolean }>("memory-initialization");
+          const hybridMemory = memoryData!.hybridMemory;
           
           const redisEnabled = hybridMemory.isRedisEnabled();
           if (redisEnabled) {
@@ -323,7 +323,7 @@ export async function setupToolV2(args: any) {
         phaseOutput.push("🚀 Phase 8: CI/CD Deployment");
         
         try {
-          const project = orchestrator.getPhaseData("project-detection");
+          const project = orchestrator.getPhaseData<{ name: string; type: string }>("project-detection");
           const deployer = new CICDDeployer(config.projectRoot, project?.type || "generic");
           const result = await deployer.deploy();
           const report = deployer.generateReport(result);
@@ -366,6 +366,7 @@ export async function setupToolV2(args: any) {
           text: output.join("\n"),
         },
       ],
+      isError: false,
     };
 
   } catch (error) {

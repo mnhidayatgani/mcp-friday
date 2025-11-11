@@ -5,12 +5,6 @@
 import { setupTool } from "../../src/tools/setup/index";
 import { SetupOrchestrator } from "../../src/tools/setup/orchestrator";
 import { ConfigLoader } from "../../src/utils/config-loader";
-import { ProjectDetector } from "../../src/utils/project-detector";
-import { HybridMemoryManager } from "../../src/memory/hybrid-manager";
-import { GitHubOptimizer } from "../../src/tools/setup/github-optimizer";
-import { ExtensionMemoryMigrator } from "../../src/tools/setup/extension-migrator";
-import { ProjectLearner } from "../../src/tools/setup/project-learner";
-import { CICDDeployer } from "../../src/tools/setup/cicd-deployer";
 
 jest.mock("../../src/tools/setup/orchestrator");
 jest.mock("../../src/utils/config-loader");
@@ -41,6 +35,7 @@ describe("Setup Tool", () => {
     mockOrchestrator = {
       registerPhase: jest.fn(),
       execute: jest.fn(),
+      generateReport: jest.fn().mockReturnValue([]),
     } as any;
 
     (SetupOrchestrator as jest.Mock).mockImplementation(() => mockOrchestrator);

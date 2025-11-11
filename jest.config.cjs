@@ -9,6 +9,15 @@ module.exports = {
   transform: {
     '^.+\\.ts$': ['ts-jest', {
       useESM: true,
+      tsconfig: {
+        target: 'ES2022',
+        module: 'ES2022',
+        lib: ['ES2022'],
+        moduleResolution: 'node',
+        esModuleInterop: true,
+        skipLibCheck: true,
+        resolveJsonModule: true,
+      },
     }],
   },
   extensionsToTreatAsEsm: ['.ts'],
