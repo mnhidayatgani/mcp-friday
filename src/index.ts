@@ -141,7 +141,10 @@ const server = new Server(
             type: "object",
             properties: {
               function: { type: "string" },
-              args: { type: "array" },
+              args: { 
+                type: "array",
+                items: { type: "string" }
+              },
             },
             required: ["function"],
           },
