@@ -13,6 +13,7 @@ import { GitHubScanner } from "./github-scanner.js";
 import { ConflictResolver } from "./conflict-resolver.js";
 import { CopilotMerger } from "./copilot-merger.js";
 import { MemoryStats } from "./memory-stats.js";
+import { ExtensionMemoryMigrator } from "./extension-migrator.js";
 
 export interface SetupArgs {
   projectType?: "web" | "api" | "cli" | "auto-detect";
@@ -49,6 +50,37 @@ export async function setupTool(args: any) {
       validation.errors.forEach(err => output.push(`   - ${err}`));
       output.push("");
     }
+
+    // Step 0: Detect and migrate extension memory
+    output.push("🔍 Step 0: Detecting memory extensions");
+    const migrator = new ExtensionMemoryMigrator(config.projectRoot);
+    const migrationResult = await migrator.migrateExtensions();
+    
+    if (migrationResult.detected.length > 0) {
+      output.push(`   ✅ Found ${migrationResult.detected.length} extension(s) with memory`);
+      migrationResult.detected.forEach(ext => {
+        output.push(`      - ${ext.name} (${ext.dataFiles.length} files)`);
+      });
+      
+      if (migrationResult.migrated.length > 0) {
+        output.push("");
+        output.push(`   📦 Migrated ${migrationResult.migrated.length} file(s)`);
+        output.push(`   💾 Total data: ${(migrationResult.totalDataMigrated / 1024).toFixed(2)} KB`);
+        
+        // Add removal instructions
+        const instructions = migrator.generateRemovalInstructions(migrationResult.detected);
+        output.push(...instructions);
+      }
+      
+      if (migrationResult.errors.length > 0) {
+        output.push("");
+        output.push("   ⚠️  Migration warnings:");
+        migrationResult.errors.forEach(err => output.push(`      - ${err}`));
+      }
+    } else {
+      output.push("   ℹ️  No memory extensions detected");
+    }
+    output.push("");
 
     // Step 1: Scan .github/ folder
     output.push("🔍 Step 1: Scanning .github/ folder");
